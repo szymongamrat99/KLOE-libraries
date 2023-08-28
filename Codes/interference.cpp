@@ -80,18 +80,34 @@ namespace KLOE
 
 	void interference::mc_randomize()
 	{
-		auto rng = std::default_random_engine {};
+		UInt_t rnd_ind;
+		srand(time(NULL));
+		rnd_ind = rand() % 2;
 
-		for(Int_t i = 0; i < chann_num; i++)
+		for (Int_t i = 0; i < chann_num; i++)
 		{
-			std::shuffle(std::begin(indices[i]), std::end(indices[i]), rng);
-			
-			// Split vector in two halves
-
-			
-
+			for (Int_t j = 0; j < time_diff[i].size(); j++)
+			{
+				if (rnd_ind == 0)
+				{
+					if (i == 0)
+					{
+						time_diff_rand_mc[i][j] = time_diff[i][j];
+						time_diff_gen_rand_mc[j] = time_diff_gen[j];
+					}
+					else time_diff_rand_mc[i][j] = time_diff[i][j];
+				}
+				else if (rnd_ind == 1)
+				{
+					if (i == 0)
+					{
+						time_diff_rand_data[i][j] = time_diff[i][j];
+						time_diff_gen_rand_data[j] = time_diff_gen[j];
+					}
+					else time_diff_rand_data[i][j] = time_diff[i][j];
+				}
+			}
 		}
-
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -117,14 +133,14 @@ namespace KLOE
 		Double_t x, y;
 
 		/////////////////////////////////////////////////////////////////////////////////////////////
-		for (Int_t i = 0; i < chann_num - 2; i++)
+		for (Int_t i = 0; i < chann_num; i++)
 		{
-			for (Int_t j = 0; j < ev_num[i]; j++)
+			for (Int_t j = 0; j < time_diff[i].size(); j++)
 			{
 				if (i == 0)
-					frac[i]->Fill(time_diff[i][j], interf_function(time_diff_gen[j], 0, xx));
+					frac[i]->Fill(time_diff[i][j], interf_function(time_diff_gen[j], 0, xx)); //! Filling Signal
 				else
-					frac[i]->Fill(time_diff[i][j]);
+					frac[i]->Fill(time_diff[i][j]); //! Filling background
 			}
 
 			if (i == 0)
@@ -144,6 +160,8 @@ namespace KLOE
 		/////////////////////////////////////////////////////////////////////////////////////////////
 
 		Double_t value = 0, *bin_sum, *err_sum;
+
+		//! Sum of bins and errors for the fitting further
 
 		bin_sum = new Double_t[bin_number];
 		err_sum = new Double_t[bin_number];

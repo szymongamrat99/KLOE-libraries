@@ -3,6 +3,7 @@
 
 #include <TMath.h>
 #include <TLorentzVector.h>
+#include <TH1.h>
 
 namespace KLOE
 {
@@ -22,7 +23,7 @@ namespace KLOE
             TVector3 boost;
             Double_t angle_vec, transv, azim_angle;
 
-            TH1 *frac[chann_num];
+            std::vector<TH1*> frac;
 
             pm00(TLorentzVector *mom_list, TLorentzVector *pos_list);
 

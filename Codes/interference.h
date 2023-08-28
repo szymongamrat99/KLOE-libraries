@@ -24,16 +24,12 @@ namespace KLOE
 
       //////////////////////////////////////////////////////////////////////////////////////////////////////
 
-      interference(TString mode_init, UInt_t *evnum_init, UInt_t bin_num_init, Double_t x_min_init, Double_t x_max_init) : mode(mode_init)
+      interference(TString mode_init, UInt_t bin_num_init, Double_t x_min_init, Double_t x_max_init) : mode(mode_init)
       {
 
         bin_number = bin_num_init;
         x_min = x_min_init;
         x_max = x_max_init;
-
-        evnum = new UInt_t[chann_num];
-
-        for(Int_t i = 0; i < chann_num; i++) evnum[i] = evnum_init[i];
 
         //////////////////////////////////////////////////////////////////////////////////
 
@@ -91,12 +87,10 @@ namespace KLOE
 
       /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-      std::vector<UInt_t> indices[chann_num];
       std::vector<Double_t> b[chann_num], e[chann_num];
 
       /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-      UInt_t *evnum;
       Double_t *exclusions, left_x_split, center_x_split, right_x_split;
       Double_t *corr_vals;
 
