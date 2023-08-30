@@ -40,7 +40,7 @@ namespace KLOE
         photon_pos[3] = pos_list[10];
     };
 
-    pm00::pm00()
+    pm00::pm00() : data(NULL), mc_sum(NULL)
     {
         phi_mom.SetPxPyPzE(0.,0.,0.,0.);
         phi_pos.SetXYZT(0.,0.,0.,0.);
@@ -101,4 +101,6 @@ namespace KLOE
     {
         four_mom.Boost(-boost);
     };
+
+    //! Calcu
 }

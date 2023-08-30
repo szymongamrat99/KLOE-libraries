@@ -98,31 +98,32 @@ namespace KLOE
 	{
 		UInt_t rnd_ind;
 		srand(time(NULL));
-		rnd_ind = rand() % 2;
 
 		for (Int_t i = 0; i < chann_num; i++)
 		{
 			for (Int_t j = 0; j < time_diff[i].size(); j++)
 			{
+				rnd_ind = rand() % 2;
+
 				if (rnd_ind == 0)
 				{
 					if (i == 0)
 					{
-						time_diff_rand_mc[i][j] = time_diff[i][j];
-						time_diff_gen_rand_mc[j] = time_diff_gen[j];
+						time_diff_rand_mc[i].push_back(time_diff[i][j]);
+						time_diff_gen_rand_mc.push_back(time_diff_gen[j]);
 					}
 					else
-						time_diff_rand_mc[i][j] = time_diff[i][j];
+						time_diff_rand_mc[i].push_back(time_diff[i][j]);
 				}
 				else if (rnd_ind == 1)
 				{
 					if (i == 0)
 					{
-						time_diff_rand_data[i][j] = time_diff[i][j];
-						time_diff_gen_rand_data[j] = time_diff_gen[j];
+						time_diff_rand_data[i].push_back(time_diff[i][j]);
+						time_diff_gen_rand_data.push_back(time_diff_gen[j]);
 					}
 					else
-						time_diff_rand_data[i][j] = time_diff[i][j];
+						time_diff_rand_data[i].push_back(time_diff[i][j]);
 				}
 			}
 		}
@@ -255,17 +256,10 @@ namespace KLOE
 
 		Double_t ReFit = xx[0];
 		Double_t ImFit = xx[1];
-		Double_t Norm[6];
-
-		Norm[0] = xx[2];
-		Norm[1] = xx[3];
-		Norm[2] = xx[4];
-		Norm[3] = xx[5];
-		Norm[4] = xx[6];
-		Norm[5] = xx[7];
+		Double_t Norm[6] = {xx[2], xx[3], xx[4], xx[5], xx[6], xx[7]};
 
 		/////////////////////////////////////////////////////////////////////////////////////////////
-		for (Int_t i = 0; i < chann_num - 2; i++)
+		for (Int_t i = 0; i < chann_num; i++)
 		{
 			for (Int_t j = 0; j < time_diff[i].size(); j++)
 			{
@@ -313,14 +307,8 @@ namespace KLOE
 		for (Int_t i = 0; i < bin_number; i++)
 			value += pow(b[6][i] - bin_sum[i], 2) / (pow(e[6][i], 2) + err_sum[i]);
 
-		delete[] bin_sum;
-		delete[] err_sum;
-
 		return value;
 	};
-
-	//! Control try of fitting with everything
-
 
 	//! Fitting 1/2 signal MC to 1/2 'DATA'
 	Double_t interference::interf_chi2_mc(const Double_t *xx)
@@ -383,7 +371,7 @@ namespace KLOE
 
 		/////////////////////////////////////////////////////////////////////////////////////////////
 
-		for (Int_t i = 0; i < 6; i++)
+		for (Int_t i = 0; i < chann_num; i++)
 		{
 			for (Int_t j = 0; j < time_diff_rand_mc[i].size(); j++)
 			{
@@ -428,7 +416,7 @@ namespace KLOE
 			e_mcsum[i] = 0.;
 		}
 
-		for (Int_t i = 0; i < 6; i++)
+		for (Int_t i = 0; i < chann_num; i++)
 			for (Int_t j = 0; j < bin_number; j++)
 			{
 				b_mcsum[j] += Norm[i] * b[i][j];
@@ -446,8 +434,8 @@ namespace KLOE
 	{
 		if (mode == "split")
 			return interf_chi2_split(xx);
-		else if (mode == "window")
-			return interf_chi2_window(xx);
+		//// else if (mode == "window")
+		//// 	return interf_chi2_window(xx);
 		else if (mode == "excluded")
 			return interf_chi2_excluded(xx);
 		else if (mode == "mc")

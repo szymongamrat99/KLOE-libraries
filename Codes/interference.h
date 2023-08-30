@@ -22,10 +22,19 @@ namespace KLOE
       std::vector<Double_t> time_diff[chann_num], time_diff_gen, time_diff_data;
       std::vector<Double_t> time_diff_rand_mc[chann_num], time_diff_rand_data[chann_num], time_diff_gen_rand_mc, time_diff_gen_rand_data;
 
+      Double_t *exclusions, left_x_split, center_x_split, right_x_split;
+
       //////////////////////////////////////////////////////////////////////////////////////////////////////
 
-      interference(TString mode_init, UInt_t bin_num_init, Double_t x_min_init, Double_t x_max_init) : mode(mode_init)
+      interference(TString mode_init, UInt_t bin_num_init, Double_t x_min_init, Double_t x_max_init, Double_t *split) : mode(mode_init), pm00()
       {
+
+        if (mode == "split") num_of_vars = 11;
+        else if (mode == "exclude") num_of_vars = 8;
+        else if (mode == "mc") num_of_vars = 3;
+        else if (mode == "bcg") num_of_vars = 8;
+
+        pm00();
 
         bin_number = bin_num_init;
         x_min = x_min_init;
@@ -33,16 +42,16 @@ namespace KLOE
 
         //////////////////////////////////////////////////////////////////////////////////
 
-        left_x_split = -30.0;
-        center_x_split = 0.0;
-        right_x_split = 30.0;
+        left_x_split = split[0];
+        center_x_split = split[1];
+        right_x_split = split[2];
 
         //////////////////////////////////////////////////////////////////////////////////
 
         // Channels of MC: pm00, regen, omega, three, semi, other bcg (6)
 
-        for (Int_t i = 0; i < 6; i++)
-          frac[i] = new TH1D(("Fitted histo " + std::to_string(i)).c_str(), "", bin_number, x_min, x_max);
+        for (Int_t i = 0; i < chann_num; i++)
+          frac.push_back(new TH1D(("Fitted histo " + std::to_string(i)).c_str(), "", bin_number, x_min, x_max));
 
         // MC sum histogram
 
@@ -50,15 +59,32 @@ namespace KLOE
 
         // Fractions of MC for 1/2 MC - 1/2 fake DATA fit
 
-        if(mode == "mc")
+        if(mode == "mc" || mode == "bcg")
         {
-          for (Int_t i = 0; i < 6; i++)
-            frac_data[i] = new TH1D(("MC 'data' fracs " + std::to_string(i)).c_str(), "", bin_number, x_min, x_max);
+          for (Int_t i = 0; i < chann_num; i++)
+            frac_data.push_back(new TH1D(("MC 'data' fracs " + std::to_string(i)).c_str(), "", bin_number, x_min, x_max));
         }
 
         // Total histogram for Data
 
         data = new TH1D("DATA histogram", "", bin_number, x_min, x_max);
+
+        for (Int_t i = 0; i < bin_number; i++)
+		    {
+			    b_mcsum.push_back(0.);
+			    e_mcsum.push_back(0.);
+
+          b_data.push_back(0.);
+			    e_data.push_back(0.);
+		    }
+
+        for (Int_t i = 0; i < chann_num; i++)
+          for (Int_t j = 0; j < bin_number; j++)
+          {
+            b[i].push_back(0.);
+            e[i].push_back(0.);
+          }
+
 
         //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -72,7 +98,14 @@ namespace KLOE
         file.Close();
 
         ///////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////
+
+        eff_vals = new Double_t[bin_number];
+
+        ///////////////////////////////////////////////////////////////////////////////////
       };
+
+      //! Overloading of constructor for exclusion method
 
       //////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -85,9 +118,7 @@ namespace KLOE
       Double_t interf_function(const Float_t x, Int_t check = 1, const Double_t *par = 0);
 
       Double_t interf_chi2_split(const Double_t *xx);
-      Double_t interf_chi2_window(const Double_t *xx);
       Double_t interf_chi2_excluded(const Double_t *xx);
-      Double_t interf_chi2_all(const Double_t *xx);
 
       Double_t interf_chi2_mc(const Double_t *xx);
       Double_t interf_chi2_bcg(const Double_t *xx);
@@ -100,8 +131,10 @@ namespace KLOE
 
     private:
 
+      ROOT::Math::Minimizer *minimum;
+
       TString mode; //! "split", "window", "excluded, "mc", "bcg", "all"
-      TGraphErrors *corr_factor;
+      TGraphErrors *corr_factor, *eff_factor;
 
       /////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -109,10 +142,12 @@ namespace KLOE
       std::vector<Double_t> b_mcsum, e_mcsum;
       std::vector<Double_t> b_data, e_data;
 
-      /////////////////////////////////////////////////////////////////////////////////////////////////////
+      std::vector<Double_t> fit_pars;
 
-      Double_t *exclusions, left_x_split, center_x_split, right_x_split;
-      Double_t *corr_vals;
+      UInt_t num_of_vars;
+
+      /////////////////////////////////////////////////////////////////////////////////////////////////////
+      Double_t *corr_vals, *eff_vals;
 
   };
 } // namespace KLOE
