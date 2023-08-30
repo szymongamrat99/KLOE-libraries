@@ -1,14 +1,16 @@
-#include "kloe_class.h"
-#include "../../Include/const.h"
-#include "interference.h"
+#include <algorithm>
+#include <random>
+
+#include <TH1.h>
 #include <TMath.h>
 #include <TLorentzVector.h>
-#include "TH1.h"
 #include <Math/Minimizer.h>
 #include <Math/Factory.h>
 #include <Math/Functor.h>
-#include <algorithm>
-#include <random>
+
+#include "kloe_class.h"
+#include "../../Include/const.h"
+#include "interference.h"
 
 namespace KLOE
 {
@@ -66,13 +68,27 @@ namespace KLOE
 		return (pow(Epsilon, 2) / (2. * Gamma)) * Value * 100000;
 	}
 
+	////////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 	void interference::bin_extraction(UInt_t channel, TH1 *histogram)
 	{
-		for (Int_t i = 0; i < bin_number; i++)
-			b[channel][i] = (histogram->GetBinContent(i + 1));
+		if (channel < chann_num)
+		{
+			for (Int_t i = 0; i < bin_number; i++)
+				b[channel][i] = (histogram->GetBinContent(i + 1));
 
-		for (Int_t i = 0; i < bin_number; i++)
-			e[channel][i] = (histogram->GetBinError(i + 1));
+			for (Int_t i = 0; i < bin_number; i++)
+				e[channel][i] = (histogram->GetBinError(i + 1));
+		}
+		else
+		{
+			for (Int_t i = 0; i < bin_number; i++)
+				b_data[i] = (histogram->GetBinContent(i + 1));
+
+			for (Int_t i = 0; i < bin_number; i++)
+				e_data[i] = (histogram->GetBinError(i + 1));
+		}
 	};
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -95,7 +111,8 @@ namespace KLOE
 						time_diff_rand_mc[i][j] = time_diff[i][j];
 						time_diff_gen_rand_mc[j] = time_diff_gen[j];
 					}
-					else time_diff_rand_mc[i][j] = time_diff[i][j];
+					else
+						time_diff_rand_mc[i][j] = time_diff[i][j];
 				}
 				else if (rnd_ind == 1)
 				{
@@ -104,7 +121,8 @@ namespace KLOE
 						time_diff_rand_data[i][j] = time_diff[i][j];
 						time_diff_gen_rand_data[j] = time_diff_gen[j];
 					}
-					else time_diff_rand_data[i][j] = time_diff[i][j];
+					else
+						time_diff_rand_data[i][j] = time_diff[i][j];
 				}
 			}
 		}
@@ -113,6 +131,7 @@ namespace KLOE
 	////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+	//! Fitting with splitted regeneration into 4 parts
 	Double_t interference::interf_chi2_split(const Double_t *xx)
 	{
 
@@ -130,8 +149,6 @@ namespace KLOE
 		Norm[7] = xx[9];	// Semi norm
 		Norm[8] = xx[10]; // Other bcg norm
 
-		Double_t x, y;
-
 		/////////////////////////////////////////////////////////////////////////////////////////////
 		for (Int_t i = 0; i < chann_num; i++)
 		{
@@ -143,6 +160,7 @@ namespace KLOE
 					frac[i]->Fill(time_diff[i][j]); //! Filling background
 			}
 
+			//! Using correction factor and efficiency
 			if (i == 0)
 			{
 				frac[i]->Scale(frac[i]->GetEntries() / frac[i]->Integral(0, bin_number + 1));
@@ -157,138 +175,80 @@ namespace KLOE
 			else
 				interference::bin_extraction(i, frac[i]);
 		}
+
 		/////////////////////////////////////////////////////////////////////////////////////////////
 
-		Double_t value = 0, *bin_sum, *err_sum;
+		for (Int_t j = 0; j < time_diff_data.size(); j++)
+			data->Fill(time_diff_data[j]); //! Filling DATA
+
+		interference::bin_extraction(6, data);
+
+		/////////////////////////////////////////////////////////////////////////////////////////////
+
+		for (Int_t i = 0; i < chann_num; i++)
+			frac[i]->Reset("ICESM");
+
+		data->Reset("ICESM");
+
+		/////////////////////////////////////////////////////////////////////////////////////////////
+
+		Double_t value = 0;
 
 		//! Sum of bins and errors for the fitting further
 
-		bin_sum = new Double_t[bin_number];
-		err_sum = new Double_t[bin_number];
-
 		for (Int_t i = 0; i < bin_number; i++)
 		{
-			bin_sum[i] = 0.;
-			err_sum[i] = 0.;
+			b_mcsum[i] = 0.;
+			e_mcsum[i] = 0.;
 		}
 
-		for (Int_t i = 0; i < chann_num - 3; i++)
+		for (Int_t i = 0; i < chann_num; i++)
 		{
-
 			for (Int_t j = 0; j < bin_number; j++)
 			{
 				if (i == 1)
 				{
 					if (j + 1 < frac[i]->FindBin(left_x_split))
 					{
-						bin_sum[j] += Norm[1] * b[i][j];
-						err_sum[j] += pow(Norm[1] * e[i][j], 2);
+						b_mcsum[j] += Norm[1] * b[i][j];
+						e_mcsum[j] += pow(Norm[1] * e[i][j], 2);
 					}
 					else if (j + 1 > frac[i]->FindBin(left_x_split) && j + 1 < frac[i]->FindBin(center_x_split))
 					{
-						bin_sum[j] += Norm[2] * b[i][j];
-						err_sum[j] += pow(Norm[2] * e[i][j], 2);
+						b_mcsum[j] += Norm[2] * b[i][j];
+						e_mcsum[j] += pow(Norm[2] * e[i][j], 2);
 					}
 					else if (j + 1 > frac[i]->FindBin(center_x_split) && j + 1 < frac[i]->FindBin(right_x_split))
 					{
-						bin_sum[j] += Norm[3] * b[i][j];
-						err_sum[j] += pow(Norm[3] * e[i][j], 2);
+						b_mcsum[j] += Norm[3] * b[i][j];
+						e_mcsum[j] += pow(Norm[3] * e[i][j], 2);
 					}
 					else if (j + 1 > frac[i]->FindBin(right_x_split))
 					{
-						bin_sum[j] += Norm[4] * b[i][j];
-						err_sum[j] += pow(Norm[4] * e[i][j], 2);
+						b_mcsum[j] += Norm[4] * b[i][j];
+						e_mcsum[j] += pow(Norm[4] * e[i][j], 2);
 					}
 				}
 				else if (i == 0)
 				{
-					bin_sum[j] += Norm[i] * b[i][j];
-					err_sum[j] += pow(Norm[i] * e[i][j], 2);
+					b_mcsum[j] += Norm[i] * b[i][j];
+					e_mcsum[j] += pow(Norm[i] * e[i][j], 2);
 				}
 				else
 				{
-					bin_sum[j] += Norm[i + 3] * b[i][j];
-					err_sum[j] += pow(Norm[i + 3] * e[i][j], 2);
+					b_mcsum[j] += Norm[i + 3] * b[i][j];
+					e_mcsum[j] += pow(Norm[i + 3] * e[i][j], 2);
 				}
 			}
 		}
 
 		for (Int_t i = 0; i < bin_number; i++)
-			value += pow(b[6][i] - bin_sum[i], 2) / (pow(e[6][i], 2) + err_sum[i]);
-
-		for (Int_t i = 0; i < chann_num - 2; i++)
-			frac[i]->Reset("ICESM");
-		delete[] bin_sum;
-		delete[] err_sum;
+			value += pow(b_data[i] - b_mcsum[i], 2) / (pow(e_data[i], 2) + e_mcsum[i]);
 
 		return value;
 	};
 
-	Double_t interference::interf_chi2_window(const Double_t *xx)
-	{
-
-		Double_t ReFit = xx[0];
-		Double_t ImFit = xx[1];
-		Double_t Norm[6];
-
-		Norm[0] = xx[2];
-		Norm[1] = xx[3];
-		Norm[2] = xx[4];
-		Norm[3] = xx[5];
-		Norm[4] = xx[6];
-		Norm[5] = xx[7];
-
-		/////////////////////////////////////////////////////////////////////////////////////////////
-		for (Int_t i = 0; i < chann_num - 2; i++)
-		{
-			for (Int_t j = 0; j < ev_num[i]; j++)
-			{
-				if (i == 0)
-					frac[i]->Fill(time_diff[i][j], interf_function(time_diff_gen[j], 0, xx));
-				else
-					frac[i]->Fill(time_diff[i][j]);
-			}
-
-			if (i == 0)
-			{
-				frac[i]->Scale(frac[i]->GetEntries() / frac[i]->Integral(0, bin_number + 1));
-				interference::bin_extraction(i, frac[i]);
-			}
-			else
-				interference::bin_extraction(i, frac[i]);
-		}
-
-		for (Int_t i = 0; i < chann_num - 2; i++)
-			frac[i]->Reset("ICESM");
-		/////////////////////////////////////////////////////////////////////////////////////////////
-
-		Double_t value = 0, *bin_sum, *err_sum;
-
-		bin_sum = new Double_t[bin_number];
-		err_sum = new Double_t[bin_number];
-
-		for (Int_t i = 0; i < bin_number; i++)
-		{
-			bin_sum[i] = 0.;
-			err_sum[i] = 0.;
-		}
-
-		for (Int_t i = 0; i < chann_num - 3; i++)
-			for (Int_t j = 0; j < bin_number; j++)
-			{
-				bin_sum[j] += Norm[i] * b[i][j];
-				err_sum[j] += pow(Norm[i] * e[i][j], 2);
-			}
-
-		for (Int_t i = 0; i < bin_number; i++)
-			value += pow(b[6][i] - bin_sum[i], 2) / (pow(e[6][i], 2) + err_sum[i]);
-
-		delete[] bin_sum;
-		delete[] err_sum;
-
-		return value;
-	};
-
+	//! Fitting with excluded regeneration peaks
 	Double_t interference::interf_chi2_excluded(const Double_t *xx)
 	{
 		// Exclusion of regeneration peaks - to be defined in a class' constructor
@@ -307,7 +267,7 @@ namespace KLOE
 		/////////////////////////////////////////////////////////////////////////////////////////////
 		for (Int_t i = 0; i < chann_num - 2; i++)
 		{
-			for (Int_t j = 0; j < ev_num[i]; j++)
+			for (Int_t j = 0; j < time_diff[i].size(); j++)
 			{
 				if (time_diff[i][j] < exclusions[0] && time_diff[i][j] > exclusions[1] &&
 						time_diff[i][j] < exclusions[2] && time_diff[i][j] > exclusions[3])
@@ -359,199 +319,129 @@ namespace KLOE
 		return value;
 	};
 
-	Double_t interference::interf_chi2_all(const Double_t *xx)
-	{
-		Double_t ReFit = xx[0];
-		Double_t ImFit = xx[1];
-		Double_t Norm[6];
+	//! Control try of fitting with everything
 
-		Norm[0] = xx[2];
-		Norm[1] = xx[3];
-		Norm[2] = xx[4];
-		Norm[3] = xx[5];
-		Norm[4] = xx[6];
-		Norm[5] = xx[7];
 
-		/////////////////////////////////////////////////////////////////////////////////////////////
-		for (Int_t i = 0; i < chann_num - 2; i++)
-		{
-			for (Int_t j = 0; j < ev_num[i]; j++)
-			{
-				if (i == 0)
-					frac[i]->Fill(time_diff[i][j], interf_function(time_diff_gen[j], 0, xx));
-				else
-					frac[i]->Fill(time_diff[i][j]);
-			}
-
-			if (i == 0)
-			{
-				frac[i]->Scale(frac[i]->GetEntries() / frac[i]->Integral(0, bin_number + 1));
-				interference::bin_extraction(i, frac[i]);
-			}
-			else
-				interference::bin_extraction(i, frac[i]);
-		}
-
-		for (Int_t i = 0; i < chann_num - 2; i++)
-			frac[i]->Reset("ICESM");
-		/////////////////////////////////////////////////////////////////////////////////////////////
-
-		Double_t value = 0, *bin_sum, *err_sum;
-
-		bin_sum = new Double_t[bin_number];
-		err_sum = new Double_t[bin_number];
-
-		for (Int_t i = 0; i < bin_number; i++)
-		{
-			bin_sum[i] = 0.;
-			err_sum[i] = 0.;
-		}
-
-		for (Int_t i = 0; i < chann_num - 3; i++)
-			for (Int_t j = 0; j < bin_number; j++)
-			{
-				bin_sum[j] += Norm[i] * b[i][j];
-				err_sum[j] += pow(Norm[i] * e[i][j], 2);
-			}
-
-		for (Int_t i = 0; i < bin_number; i++)
-			value += pow(b[6][i] - bin_sum[i], 2) / (pow(e[6][i], 2) + err_sum[i]);
-
-		delete[] bin_sum;
-		delete[] err_sum;
-
-		return value;
-	};
-
+	//! Fitting 1/2 signal MC to 1/2 'DATA'
 	Double_t interference::interf_chi2_mc(const Double_t *xx)
 	{
 
+		//* Fitting interference for MC splitted in half
+
 		Double_t ReFit = xx[0];
 		Double_t ImFit = xx[1];
-		Double_t Norm[6];
-
-		Norm[0] = xx[2];
-		Norm[1] = xx[3];
-		Norm[2] = xx[4];
-		Norm[3] = xx[5];
-		Norm[4] = xx[6];
-		Norm[5] = xx[7];
+		Double_t Norm = xx[2];
 
 		/////////////////////////////////////////////////////////////////////////////////////////////
-		for (Int_t i = 0; i < chann_num - 2; i++)
-		{
-			for (Int_t j = 0; j < ev_num[i]; j++)
-			{
-				if (i == 0)
-					frac[i]->Fill(time_diff[i][j], interf_function(time_diff_gen[j], 0, xx));
-				else
-					frac[i]->Fill(time_diff[i][j]);
-			}
 
-			if (i == 0)
-			{
-				frac[i]->Scale(frac[i]->GetEntries() / frac[i]->Integral(0, bin_number + 1));
-				interference::bin_extraction(i, frac[i]);
-			}
-			else
-				interference::bin_extraction(i, frac[i]);
-		}
+		for (Int_t j = 0; j < time_diff_rand_mc[0].size(); j++)
+			frac[0]->Fill(time_diff_rand_mc[0][j], interf_function(time_diff_gen_rand_mc[j], 0, xx));
 
-		for (Int_t i = 0; i < chann_num - 2; i++)
-			frac[i]->Reset("ICESM");
+		for (Int_t j = 0; j < time_diff_rand_data[0].size(); j++)
+			data->Fill(time_diff_rand_data[0][j], interf_function(time_diff_gen_rand_data[j]));
+
+		frac[0]->Scale(frac[0]->GetEntries() / frac[0]->Integral(0, bin_number + 1));
+		interference::bin_extraction(0, frac[0]);
+
+		data->Scale(data->GetEntries() / data->Integral(0, bin_number + 1));
+		interference::bin_extraction(6, data);
+
+		frac[0]->Reset("ICESM");
+		data->Reset("ICESM");
+
 		/////////////////////////////////////////////////////////////////////////////////////////////
 
-		Double_t value = 0, *bin_sum, *err_sum;
-
-		bin_sum = new Double_t[bin_number];
-		err_sum = new Double_t[bin_number];
+		Double_t value = 0;
 
 		for (Int_t i = 0; i < bin_number; i++)
 		{
-			bin_sum[i] = 0.;
-			err_sum[i] = 0.;
+			b_mcsum[i] = 0.;
+			e_mcsum[i] = 0.;
 		}
 
-		for (Int_t i = 0; i < chann_num - 3; i++)
-			for (Int_t j = 0; j < bin_number; j++)
-			{
-				bin_sum[j] += Norm[i] * b[i][j];
-				err_sum[j] += pow(Norm[i] * e[i][j], 2);
-			}
+		for (Int_t j = 0; j < bin_number; j++)
+		{
+			b_mcsum[j] += Norm * b[0][j];
+			e_mcsum[j] += pow(Norm * e[0][j], 2);
+		}
 
 		for (Int_t i = 0; i < bin_number; i++)
-			value += pow(b[6][i] - bin_sum[i], 2) / (pow(e[6][i], 2) + err_sum[i]);
-
-		delete[] bin_sum;
-		delete[] err_sum;
+			value += pow(b_data[i] - b_mcsum[i], 2) / (pow(e_data[i], 2) + e_mcsum[i]);
 
 		return value;
 	};
 
+	//! Fitting 1/2 total MC to 1/2 'DATA'
 	Double_t interference::interf_chi2_bcg(const Double_t *xx)
 	{
+
+		//* Fitting interference for MC splitted in half
+
 		Double_t ReFit = xx[0];
 		Double_t ImFit = xx[1];
-		Double_t Norm[6];
-
-		Norm[0] = xx[2];
-		Norm[1] = xx[3];
-		Norm[2] = xx[4];
-		Norm[3] = xx[5];
-		Norm[4] = xx[6];
-		Norm[5] = xx[7];
+		Double_t Norm[6] = {xx[2], xx[3], xx[4], xx[5], xx[6], xx[7]};
 
 		/////////////////////////////////////////////////////////////////////////////////////////////
-		for (Int_t i = 0; i < chann_num - 2; i++)
+
+		for (Int_t i = 0; i < 6; i++)
 		{
-			for (Int_t j = 0; j < ev_num[i]; j++)
+			for (Int_t j = 0; j < time_diff_rand_mc[i].size(); j++)
 			{
 				if (i == 0)
-					frac[i]->Fill(time_diff[i][j], interf_function(time_diff_gen[j], 0, xx));
+					frac[i]->Fill(time_diff_rand_mc[i][j], interf_function(time_diff_gen_rand_mc[j], 0, xx));
 				else
-					frac[i]->Fill(time_diff[i][j]);
+					frac[i]->Fill(time_diff_rand_mc[i][j]);
 			}
 
-			if (i == 0)
+			for (Int_t j = 0; j < time_diff_rand_data[i].size(); j++)
 			{
-				frac[i]->Scale(frac[i]->GetEntries() / frac[i]->Integral(0, bin_number + 1));
-				interference::bin_extraction(i, frac[i]);
+				if (i == 0)
+					frac_data[i]->Fill(time_diff_rand_data[i][j], interf_function(time_diff_gen_rand_data[j]));
+				else
+					frac_data[i]->Fill(time_diff_rand_data[i][j]);
 			}
-			else
-				interference::bin_extraction(i, frac[i]);
+
+			frac[i]->Scale(frac[i]->GetEntries() / frac[i]->Integral(0, bin_number + 1));
+			interference::bin_extraction(i, frac[i]);
+
+			frac_data[i]->Scale(frac_data[i]->GetEntries() / frac_data[i]->Integral(0, bin_number + 1));
+			data->Add(frac_data[i]);
 		}
 
-		for (Int_t i = 0; i < chann_num - 2; i++)
+		interference::bin_extraction(6, data);
+
+		for (Int_t i = 0; i < 6; i++)
+		{
 			frac[i]->Reset("ICESM");
+			frac_data[i]->Reset("ICESM");
+		}
+
+		data->Reset("ICESM");
+
 		/////////////////////////////////////////////////////////////////////////////////////////////
 
-		Double_t value = 0, *bin_sum, *err_sum;
-
-		bin_sum = new Double_t[bin_number];
-		err_sum = new Double_t[bin_number];
+		Double_t value = 0;
 
 		for (Int_t i = 0; i < bin_number; i++)
 		{
-			bin_sum[i] = 0.;
-			err_sum[i] = 0.;
+			b_mcsum[i] = 0.;
+			e_mcsum[i] = 0.;
 		}
 
-		for (Int_t i = 0; i < chann_num - 3; i++)
+		for (Int_t i = 0; i < 6; i++)
 			for (Int_t j = 0; j < bin_number; j++)
 			{
-				bin_sum[j] += Norm[i] * b[i][j];
-				err_sum[j] += pow(Norm[i] * e[i][j], 2);
+				b_mcsum[j] += Norm[i] * b[i][j];
+				e_mcsum[j] += pow(Norm[i] * e[i][j], 2);
 			}
 
 		for (Int_t i = 0; i < bin_number; i++)
-			value += pow(b[6][i] - bin_sum[i], 2) / (pow(e[6][i], 2) + err_sum[i]);
-
-		delete[] bin_sum;
-		delete[] err_sum;
+			value += pow(b_data[i] - b_mcsum[i], 2) / (pow(e_data[i], 2) + e_mcsum[i]);
 
 		return value;
 	};
 
+	//! Auxillary function to use any of the others
 	Double_t interference::interf_chi2(const Double_t *xx)
 	{
 		if (mode == "split")

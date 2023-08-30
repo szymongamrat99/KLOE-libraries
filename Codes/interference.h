@@ -19,7 +19,7 @@ namespace KLOE
   {
     public:
 
-      std::vector<Double_t> time_diff[chann_num], time_diff_gen;
+      std::vector<Double_t> time_diff[chann_num], time_diff_gen, time_diff_data;
       std::vector<Double_t> time_diff_rand_mc[chann_num], time_diff_rand_data[chann_num], time_diff_gen_rand_mc, time_diff_gen_rand_data;
 
       //////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -39,8 +39,26 @@ namespace KLOE
 
         //////////////////////////////////////////////////////////////////////////////////
 
-        for (Int_t i = 0; i < chann_num; i++)
-          frac[i] = new TH1F(("Fitted histo " + std::to_string(i)).c_str(), "", bin_number, x_min, x_max);
+        // Channels of MC: pm00, regen, omega, three, semi, other bcg (6)
+
+        for (Int_t i = 0; i < 6; i++)
+          frac[i] = new TH1D(("Fitted histo " + std::to_string(i)).c_str(), "", bin_number, x_min, x_max);
+
+        // MC sum histogram
+
+        mc_sum = new TH1D("MC sum", "", bin_number, x_min, x_max);
+
+        // Fractions of MC for 1/2 MC - 1/2 fake DATA fit
+
+        if(mode == "mc")
+        {
+          for (Int_t i = 0; i < 6; i++)
+            frac_data[i] = new TH1D(("MC 'data' fracs " + std::to_string(i)).c_str(), "", bin_number, x_min, x_max);
+        }
+
+        // Total histogram for Data
+
+        data = new TH1D("DATA histogram", "", bin_number, x_min, x_max);
 
         //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -82,12 +100,14 @@ namespace KLOE
 
     private:
 
-      TString mode = "split"; // "split", "window", "excluded, "mc", "bcg", "all"
+      TString mode; //! "split", "window", "excluded, "mc", "bcg", "all"
       TGraphErrors *corr_factor;
 
       /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-      std::vector<Double_t> b[chann_num], e[chann_num];
+      std::vector<Double_t> b[6], e[6];
+      std::vector<Double_t> b_mcsum, e_mcsum;
+      std::vector<Double_t> b_data, e_data;
 
       /////////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -23,7 +23,8 @@ namespace KLOE
             TVector3 boost;
             Double_t angle_vec, transv, azim_angle;
 
-            std::vector<TH1*> frac;
+            std::vector<TH1*> frac, frac_data;
+            TH1 *data, *mc_sum;
 
             pm00(TLorentzVector *mom_list, TLorentzVector *pos_list);
 
