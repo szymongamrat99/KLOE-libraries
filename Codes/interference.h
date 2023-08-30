@@ -2,7 +2,7 @@
 #define INTERFERENCE_H
 
 #include "kloe_class.h"
-#include "../const.h" 
+#include "../const.h"
 #include "TMath.h"
 #include "TString.h"
 #include "TH1.h"
@@ -11,87 +11,164 @@
 #include <iostream>
 #include <TGraphErrors.h>
 #include <TFile.h>
-
-
-#define chann_num 9
+#include <vector>
 
 namespace KLOE
 {
-    class interference: public pm00
-    {
-        public:
-            UInt_t bin_number = 181;
-            Double_t x_min = -90., x_max = 90.;
+  class interference : public pm00
+  {
+    public:
 
-            UInt_t *ev_num;
+      std::vector<Double_t> time_diff[chann_num], time_diff_gen, time_diff_data;
+      std::vector<Double_t> time_diff_rand_mc[chann_num], time_diff_rand_data[chann_num], time_diff_gen_rand_mc, time_diff_gen_rand_data;
 
-            Double_t **time_diff;
-            Double_t *time_diff_gen;
+      Double_t *exclusions, left_x_split, center_x_split, right_x_split;
 
-            //////////////////////////////////////////////////////////////////////////////////////////////////////
+      std::vector<Double_t> init_vars, step;
 
-            interference(TString mode_init, UInt_t *ev_num_init, UInt_t bin_num, Double_t x_min_init, Double_t x_max_init) : mode(mode_init), bin_number(bin_num), x_min(x_min_init), x_max(x_max_init) 
-            {
-                ev_num = new UInt_t[chann_num];
-                for(Int_t i = 0; i < chann_num; i++) ev_num[i] = ev_num_init[i];
+      Double_t *corr_vals, *eff_vals; 
 
-                time_diff_gen = new Double_t[ev_num[0]];
-                time_diff = new Double_t*[chann_num];
+      //////////////////////////////////////////////////////////////////////////////////////////////////////
 
-                for(Int_t i = 0; i < chann_num; i++) time_diff[i] = new Double_t[ev_num[i]];
+      interference(TString mode_init, Bool_t corr_check, UInt_t bin_num_init, Double_t x_min_init, Double_t x_max_init, Double_t *split) : mode(mode_init), pm00()
+      {
 
-                b = new Double_t*[chann_num];
-                e = new Double_t*[chann_num];
+        if (mode == "split") num_of_vars = 11;
+        else if (mode == "exclude") num_of_vars = 8;
+        else if (mode == "mc") num_of_vars = 3;
+        else if (mode == "bcg") num_of_vars = 8;
 
-                for(Int_t i = 0; i < chann_num; i++) b[i] = new Double_t[bin_number];
-                for(Int_t i = 0; i < chann_num; i++) e[i] = new Double_t[bin_number];
+        /*for(Int_t i = 0; i < num_of_vars; i++)
+        {
+          if(i == 0) init_vars.push_back(Re);
+          if(i == 1) init_vars.push_back(M_PI*Im_nonCPT/180.);
+          else init_vars.push_back(1.0);
+          
+          step.push_back(abs(init_vars[i]/10.));
+        }*/
 
-                for(Int_t i = 0; i < chann_num; i++)
-                    frac[i] = new TH1F(("Fitted histo " + std::to_string(i)).c_str(), "", bin_number, x_min, x_max);
+        pm00();
 
-                corr_vals = new Double_t[bin_number];
+        bin_number = bin_num_init;
+        x_min = x_min_init;
+        x_max = x_max_init;
 
-                left_x_split = -30.0;
-                center_x_split = 0.0;
-                right_x_split = 30.0;
+        //////////////////////////////////////////////////////////////////////////////////
 
-                TFile file("/internal/big_one/4/users/gamrat/scripts/Scripts/corr_file.root");
+        left_x_split = split[0];
+        center_x_split = split[1];
+        right_x_split = split[2];
 
-                corr_factor = (TGraphErrors*)file.Get("correction_factor");
-                corr_vals = corr_factor->GetY();
+        //////////////////////////////////////////////////////////////////////////////////
 
-                file.Close();
-            
-            };
+        // Channels of MC: pm00, regen, omega, three, semi, other bcg (6)
 
-            //////////////////////////////////////////////////////////////////////////////////////////////////////
+        for (Int_t i = 0; i < chann_num; i++)
+          frac.push_back(new TH1D(("Fitted histo " + std::to_string(i)).c_str(), "", bin_number, x_min, x_max));
 
-            void bin_extraction(UInt_t channel, TH1* histogram);
+        // MC sum histogram
 
-            //////////////////////////////////////////////////////////////////////////////////////////////////////
+        mc_sum = new TH1D("MC sum", "", bin_number, x_min, x_max);
 
-            Double_t interf_function(const Float_t x, Int_t check = 1, const Double_t *par = 0);
+        // Fractions of MC for 1/2 MC - 1/2 fake DATA fit
 
-            Double_t interf_chi2_split(const Double_t *xx);
-            Double_t interf_chi2_window(const Double_t *xx);
-            Double_t interf_chi2_excluded(const Double_t *xx);
-            Double_t interf_chi2_all(const Double_t *xx);
+        if(mode == "mc" || mode == "bcg")
+        {
+          for (Int_t i = 0; i < chann_num; i++)
+            frac_data.push_back(new TH1D(("MC 'data' fracs " + std::to_string(i)).c_str(), "", bin_number, x_min, x_max));
+        }
 
-            Double_t interf_chi2_mc(const Double_t *xx);
-            Double_t interf_chi2_bcg(const Double_t *xx);
+        // Total histogram for Data
 
-            Double_t interf_chi2(const Double_t *xx);
+        data = new TH1D("DATA histogram", "", bin_number, x_min, x_max);
 
-            /////////////////////////////////////////////////////////////////////////////////////////////////////
+        for (Int_t i = 0; i < bin_number; i++)
+		    {
+			    b_mcsum.push_back(0.);
+			    e_mcsum.push_back(0.);
 
-        private:
-            TString mode = "split";  // "split", "window", "excluded, "mc", "bcg", "all"
-            TH1 *frac[chann_num];
-            Double_t **b, **e;
-            Double_t *exclusions, left_x_split, center_x_split, right_x_split;
-            TGraphErrors *corr_factor;
-            Double_t *corr_vals;
-    };
+          b_data.push_back(0.);
+			    e_data.push_back(0.);
+		    }
+
+        for (Int_t i = 0; i < chann_num; i++)
+          for (Int_t j = 0; j < bin_number; j++)
+          {
+            b[i].push_back(0.);
+            e[i].push_back(0.);
+          }
+
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+
+        corr_vals = new Double_t[bin_number];
+
+        if(corr_check)
+        {
+          TFile file("/internal/big_one/4/users/gamrat/scripts/Scripts/corr_file.root");
+
+          corr_factor = (TGraphErrors *)file.Get("correction_factor");
+          corr_vals = corr_factor->GetY();
+
+          file.Close();
+        }
+        else
+        {
+          for(Int_t i = 0; i < bin_number; i++) corr_vals[i] = 1.;
+        }
+
+        ///////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////
+
+        eff_vals = new Double_t[bin_number];
+
+        ///////////////////////////////////////////////////////////////////////////////////
+      };
+
+      //! Overloading of constructor for exclusion method
+
+      //////////////////////////////////////////////////////////////////////////////////////////////////////
+
+      void bin_extraction(UInt_t channel, TH1 *histogram);
+
+      void mc_randomize();
+
+      //////////////////////////////////////////////////////////////////////////////////////////////////////
+
+      Double_t interf_function(const Float_t x, Int_t check = 1, const Double_t *par = 0);
+
+      Double_t interf_chi2_split(const Double_t *xx);
+      Double_t interf_chi2_excluded(const Double_t *xx);
+
+      Double_t interf_chi2_mc(const Double_t *xx);
+      Double_t interf_chi2_bcg(const Double_t *xx);
+
+      Double_t interf_chi2(const Double_t *xx);
+
+      /////////////////////////////////////////////////////////////////////////////////////////////////////
+      /////////////////////////////////////////////////////////////////////////////////////////////////////
+      /////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    private:
+
+      ROOT::Math::Minimizer *minimum;
+
+      TString mode; //! "split", "window", "excluded, "mc", "bcg", "all"
+      TGraphErrors *corr_factor, *eff_factor;
+
+      /////////////////////////////////////////////////////////////////////////////////////////////////////
+
+      std::vector<Double_t> b[6], e[6];
+      std::vector<Double_t> b_mcsum, e_mcsum;
+      std::vector<Double_t> b_data, e_data;
+
+      std::vector<Double_t> fit_pars;
+
+      UInt_t num_of_vars;
+
+      /////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  };
 } // namespace KLOE
 
 #endif
