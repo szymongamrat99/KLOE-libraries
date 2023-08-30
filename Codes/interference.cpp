@@ -257,7 +257,7 @@ namespace KLOE
 		Double_t ReFit = xx[0];
 		Double_t ImFit = xx[1];
 		Double_t Norm[6] = {xx[2], xx[3], xx[4], xx[5], xx[6], xx[7]};
-
+		
 		/////////////////////////////////////////////////////////////////////////////////////////////
 		for (Int_t i = 0; i < chann_num; i++)
 		{
@@ -434,8 +434,6 @@ namespace KLOE
 	{
 		if (mode == "split")
 			return interf_chi2_split(xx);
-		//// else if (mode == "window")
-		//// 	return interf_chi2_window(xx);
 		else if (mode == "excluded")
 			return interf_chi2_excluded(xx);
 		else if (mode == "mc")

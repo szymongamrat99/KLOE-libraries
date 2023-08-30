@@ -24,15 +24,28 @@ namespace KLOE
 
       Double_t *exclusions, left_x_split, center_x_split, right_x_split;
 
+      std::vector<Double_t> init_vars, step;
+
+      Double_t *corr_vals, *eff_vals; 
+
       //////////////////////////////////////////////////////////////////////////////////////////////////////
 
-      interference(TString mode_init, UInt_t bin_num_init, Double_t x_min_init, Double_t x_max_init, Double_t *split) : mode(mode_init), pm00()
+      interference(TString mode_init, Bool_t corr_check, UInt_t bin_num_init, Double_t x_min_init, Double_t x_max_init, Double_t *split) : mode(mode_init), pm00()
       {
 
         if (mode == "split") num_of_vars = 11;
         else if (mode == "exclude") num_of_vars = 8;
         else if (mode == "mc") num_of_vars = 3;
         else if (mode == "bcg") num_of_vars = 8;
+
+        /*for(Int_t i = 0; i < num_of_vars; i++)
+        {
+          if(i == 0) init_vars.push_back(Re);
+          if(i == 1) init_vars.push_back(M_PI*Im_nonCPT/180.);
+          else init_vars.push_back(1.0);
+          
+          step.push_back(abs(init_vars[i]/10.));
+        }*/
 
         pm00();
 
@@ -90,12 +103,19 @@ namespace KLOE
 
         corr_vals = new Double_t[bin_number];
 
-        TFile file("/internal/big_one/4/users/gamrat/scripts/Scripts/corr_file.root");
+        if(corr_check)
+        {
+          TFile file("/internal/big_one/4/users/gamrat/scripts/Scripts/corr_file.root");
 
-        corr_factor = (TGraphErrors *)file.Get("correction_factor");
-        corr_vals = corr_factor->GetY();
+          corr_factor = (TGraphErrors *)file.Get("correction_factor");
+          corr_vals = corr_factor->GetY();
 
-        file.Close();
+          file.Close();
+        }
+        else
+        {
+          for(Int_t i = 0; i < bin_number; i++) corr_vals[i] = 1.;
+        }
 
         ///////////////////////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////////////////////////
@@ -147,7 +167,6 @@ namespace KLOE
       UInt_t num_of_vars;
 
       /////////////////////////////////////////////////////////////////////////////////////////////////////
-      Double_t *corr_vals, *eff_vals;
 
   };
 } // namespace KLOE
