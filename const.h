@@ -2,6 +2,7 @@
 #define CONST_H
 
 #include <TString.h>
+#include <TLegend.h>
 
 
   //Constants used in the analysis
@@ -71,16 +72,10 @@
 
   const Color_t chann_color[chann_num] = {kRed, kGreen, kViolet, kCyan, kBlue, kGreen-1};
   const Color_t data_color = kBlack;
-  const Color_t mcsum_color = kGray + 1;
-
-
+  const Color_t mcsum_color = kOrange;
 
   //Paths
 
-  TString abs_path = "/internal/big_one/4/users/gamrat/scripts/";
-  TString path;
-  TString name_file_mc = "mc_stream62_mccard2_";
-  TString name_file_data = "data_stream2_";
 
 
 #endif

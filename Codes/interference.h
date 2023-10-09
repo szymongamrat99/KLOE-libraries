@@ -26,9 +26,11 @@ namespace KLOE
 
       std::vector<Double_t> init_vars, step;
 
-      Double_t *corr_vals, *eff_vals; 
+      Double_t *corr_vals, *eff_vals, *resi_vals; 
 
       //////////////////////////////////////////////////////////////////////////////////////////////////////
+
+      interference() {};
 
       interference(TString mode_init, Bool_t corr_check, UInt_t bin_num_init, Double_t x_min_init, Double_t x_max_init, Double_t *split) : mode(mode_init), pm00()
       {
@@ -60,6 +62,8 @@ namespace KLOE
         right_x_split = split[2];
 
         //////////////////////////////////////////////////////////////////////////////////
+
+        resi_vals = new Double_t[bin_number];
 
         // Channels of MC: pm00, regen, omega, three, semi, other bcg (6)
 
@@ -150,8 +154,6 @@ namespace KLOE
       /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     private:
-
-      ROOT::Math::Minimizer *minimum;
 
       TString mode; //! "split", "window", "excluded, "mc", "bcg", "all"
       TGraphErrors *corr_factor, *eff_factor;

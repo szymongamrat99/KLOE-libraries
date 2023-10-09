@@ -7,6 +7,7 @@
 #include <Math/Minimizer.h>
 #include <Math/Factory.h>
 #include <Math/Functor.h>
+#include <TRatioPlot.h>
 
 #include "kloe_class.h"
 #include "../../Include/const.h"

@@ -1,8 +1,8 @@
 C=======================================================================
 C=======================================================================
 C=======================================================================
-      SUBROUTINE fit_interf_signal(P,DP,N,M,CHISQR,C,D,MTX,Z,loopcount) bind(C, name="carray")
-C
+      SUBROUTINE fit_interf_signal(P,DP,M,CHISQR,C,D,loopcount)
+C bind(C, name="carray")
 C Description:
 C ------------
 C
@@ -84,11 +84,11 @@ C
         REAL XI2
         COMMON/PHIFIT/XI2(50)
         INTEGER I, J, K, L, N
-C       PARAMETER( N = 36 )                  
+        PARAMETER( N = 36 )                  
 C Number of constraints in fit
         INTEGER M                        
 C Parameters & errors
-        REAL    P(N), DP(N), P0(N), P1(N) 
+        REAL*8    P(N), DP(N), P0(N), P1(N) 
 C Parameter Corrections
         REAL*8  A(N)                      
 C Derivative of constraint M w.r.t. par. N
@@ -101,8 +101,8 @@ C (0,-C)
         REAL*8  Z(N+M)                    
         REAL*8  C1(M)
         INTEGER ITERATIONMAX, IFAIL, loopcount
-        REAL    CHISQR, DX2, DX2MAX, R(100), C2
-        REAL    PTEMP(N)
+        REAL*8    CHISQR, DX2, DX2MAX, R(100), C2
+        REAL*8    PTEMP(N)
         LOGICAL FailFlag
 C LAPACK
         INTEGER  IPIV(N+M), INFO
@@ -125,6 +125,8 @@ C       ITERATIONMAX = 50
             D(I,J) = 0.d0
           ENDDO
         ENDDO
+
+        WRITE(*,*) CHISQR
 C
         CALL CONSTRAINT(M,N,P,C)
 C
@@ -209,7 +211,7 @@ C
 C Local declarations
 C
         INTEGER I,J,K,L,M,N
-        REAL    P(N), DP(N), P1(N)
+        REAL*8    P(N), DP(N), P1(N)
         REAL*8  D(N,M), C(M), C1(M), D1, STEP
 C------------------------------------------------------------------------------
         DO I=1,N
@@ -339,12 +341,12 @@ C
 C Local declarations
 C
         INTEGER    M, N, ILoop, OffSet
-        REAL       P(N), Ptrk(2,4), Pgam(4,4), Tgam(4)
-        REAL       Ltot, PxTot, PyTot, PzTot, EnTot
-        REAL       Mgggg, Mpipi, Vkne, Tkne
-        REAL       Mkne,Vgam
-             REAL       SinThetaBoost, CosThetaBoost
-        REAL       PxPhi, PyPhi, PzPhi, EnPhi
+        REAL*8       P(N), Ptrk(2,4), Pgam(4,4), Tgam(4)
+        REAL*8       Ltot, PxTot, PyTot, PzTot, EnTot
+        REAL*8       Mgggg, Mpipi, Vkne, Tkne
+        REAL*8       Mkne,Vgam
+             REAL*8       SinThetaBoost, CosThetaBoost
+        REAL*8       PxPhi, PyPhi, PzPhi, EnPhi
         REAL*8     C(M)
 C------------------------------------------------------------------------------
         Vgam = Cvel
