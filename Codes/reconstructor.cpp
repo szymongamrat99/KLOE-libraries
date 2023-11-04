@@ -78,7 +78,7 @@ Solution Reconstructor::MySolve(int * selected){
   //delta = p*p - 2.*denom*q;
   
   S.sol[0][3] = ( p - sqrt( p*p - 2.*denom*q ) ) / denom;
-  S.sol[1][3] = ( p + sqrt( p*p - 2.*denom*q ) ) / denom;
+  S.sol[1][3] = ( p + sqrt( p*p - 2.*denom*q ) ) / denom; 
 
   for(int i=0;i<2;i++){
     S.error[i] = false;

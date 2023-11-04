@@ -19,8 +19,14 @@ g++ -fPIC `root-config --cflags --glibs` -lm -c Codes/charged_mom.cpp -o Compile
 #Neutral momenta
 g++ -fPIC `root-config --cflags --glibs` -lm -c Codes/neutral_mom.cpp -o Compiled/neutral_mom.o
 
-#Kinematic fits
-gfortran -fPIC -llapack -lstdc++ -c Codes/kinematic_fits.f -o Compiled/kinematic_fits.o
+#Chi2 distribution
+g++ -fPIC `root-config --cflags --glibs` -lm -c Codes/chi2_dist.cpp -o Compiled/chi2_dist.o
+
+#Lorentz transf
+g++ -fPIC `root-config --cflags --glibs` -lm -c Codes/lorentz_transf.cpp -o Compiled/lorentz_transf.o
+
+#Constraints tri
+g++ -fPIC `root-config --cflags --glibs` -lm -c Codes/constraints_tri.cpp -o Compiled/constraints_tri.o
 
 #Shared library creation
 g++ -shared -g Compiled/*.o -o librec.so

@@ -3,7 +3,7 @@
 
 #include "TMath.h"
 
-void plane_intersection(Float_t *, Float_t *, Float_t *,
+void plane_intersection(Float_t *, Float_t *,
                    Float_t *, Float_t *,
                    Float_t *);
 
