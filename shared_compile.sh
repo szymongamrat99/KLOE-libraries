@@ -28,5 +28,8 @@ g++ -fPIC `root-config --cflags --glibs` -lm -c Codes/lorentz_transf.cpp -o Comp
 #Constraints tri
 g++ -fPIC `root-config --cflags --glibs` -lm -c Codes/constraints_tri.cpp -o Compiled/constraints_tri.o
 
+#Triple gaussian
+g++ -fPIC `root-config --cflags --glibs` -lm -c Codes/triple_gaus.cpp -o Compiled/triple_gaus.o
+
 #Shared library creation
 g++ -shared -g Compiled/*.o -o librec.so
