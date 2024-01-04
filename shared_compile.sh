@@ -31,5 +31,8 @@ g++ -fPIC `root-config --cflags --glibs` -lm -c Codes/constraints_tri.cpp -o Com
 #Triple gaussian
 g++ -fPIC `root-config --cflags --glibs` -lm -c Codes/triple_gaus.cpp -o Compiled/triple_gaus.o
 
+#Triple gaussian
+g++ -fPIC `root-config --cflags --glibs` -lm -c Codes/line_emc_intersection.cpp -o Compiled/line_emc_intersection.o
+
 #Shared library creation
 g++ -shared -g Compiled/*.o -o librec.so

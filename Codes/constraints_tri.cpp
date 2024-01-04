@@ -13,6 +13,7 @@ Int_t selected[4] = {1, 2, 3, 4};
 Double_t ene_consv(Double_t *x, Double_t *p)
 {
   Float_t boost_vec[3] = {-p[20] / p[23], -p[21] / p[23], -p[22] / p[23]};
+  Float_t phi_init[4] = { p[20], p[21], p[22], p[23] }, phi_end[4];
   Float_t gamma_mom[4][4], vec_init[4], vec_end[4], neu_vtx[4];
 
   Double_t value[2], value_min, T0;
@@ -54,12 +55,13 @@ Double_t ene_consv(Double_t *x, Double_t *p)
       vec_init[3] = gamma_mom[0][3] + gamma_mom[1][3] + gamma_mom[2][3] + gamma_mom[3][3];
 
       lorentz_transf(boost_vec, vec_init, vec_end);
+      lorentz_transf(boost_vec, phi_init, phi_end);
 
-      value[i] = vec_end[3] - (p[23] / 2.);
+      value[i] = vec_end[3] - (phi_end[3] / 2.);
     }
     else
     {
-      value[i] = 999999.;
+      value[i] = 1E15;
     }
   }
 
@@ -119,7 +121,7 @@ Double_t minv_consv(Double_t *x, Double_t *p)
     }
     else
     {
-      value[i] = 999999.;
+      value[i] = 1E15;
     }
   }
 
@@ -196,7 +198,7 @@ Double_t x_consv(Double_t *x, Double_t *p)
     }
     else
     {
-      value[i] = 999999.;
+      value[i] = 1E15;
     }
   }
 
@@ -270,7 +272,7 @@ Double_t y_consv(Double_t *x, Double_t *p)
     }
     else
     {
-      value[i] = 999999.;
+      value[i] = 1E15;
     }
   }
 
@@ -344,7 +346,7 @@ Double_t z_consv(Double_t *x, Double_t *p)
     }
     else
     {
-      value[i] = 999999.;
+      value[i] = 1E15;
     }
   }
 
