@@ -1,6 +1,7 @@
 CXX = g++
 CXXFLAGS = -fPIC `root-config --cflags --glibs` -lm
 LDFLAGS = -shared -g
+PATH = Codes
 
 kloe_library.so: kloe_class.o interference.o kinematic_fits.o
 	$(CXX) -o kloe_library.so $(LDFLAGS) *.o
