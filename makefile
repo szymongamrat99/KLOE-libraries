@@ -7,18 +7,18 @@ OBJPATH = Compiled
 INCPATH = Inc
 
 SRC = $(wildcard $(SRCPATH)/*.cpp)
-DICT = $(wildcard $(INCPATH)/*.h)
-OBJ = 
+DICT = $(wildcard $(SRCPATH)/*.h)
+OBJ = $(SRC:$(SRCPATH)/%.cpp=$(OBJPATH)/%.o)
 
 SHARED = librec.so
 
-.PHONY: all clean
+.PHONY: all
 all: $(OBJ) $(SHARED)
 
 $(SHARED): $(OBJ)
 	$(CXX) $(LDFLAGS) $^ -o $@
 
-%.o: %.c %.h
+$(OBJPATH)/%.o: Codes/%.cpp Codes/%.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean: 
