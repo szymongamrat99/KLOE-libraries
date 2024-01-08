@@ -1,14 +1,12 @@
 #ifndef RECONSTRUCTOR_H
 #define RECONSTRUCTOR_H
 
-#include "TMath.h"
-
 struct Solution{
   /*
     1,2
     x,y,z,t
   */
-  float sol[2][4];
+  double sol[2][4];
   // indicates error computing solution
   bool error[2];
 };
@@ -16,26 +14,26 @@ struct Solution{
 class Reconstructor{
   
  public:
-  void SetClu(int i, float x, float y, float z, float t, float E);
+  void SetClu(int i, double x, double y, double z, double t, double E);
   Solution MySolve(int * selected);
   Solution KleusbergSolve(int * selected);
-  Solution LeastSquaresSolve(float * x0);
-  Solution MinuitSolve(float *x0);
+  Solution LeastSquaresSolve(double * x0);
+  Solution MinuitSolve(double *x0);
   
-  float ResidualErr(int i, float const * x);
-  float ResidualErrTot(float const * x);
-  float CombEnergy(int * selected);
-  float TotalEnergy()const;
-  float GetInvMasses(float * sol, int * comb, float * Minvgg)const;
-  float GetInvMassDiscrepancy(float * sol, int * comb)const;
-  void GetKmomentum(const float * sol, float * p)const;
+  double ResidualErr(int i, double const * x);
+  double ResidualErrTot(double const * x);
+  double CombEnergy(int * selected);
+  double TotalEnergy()const;
+  double GetInvMasses(double * sol, int * comb, double * Minvgg)const;
+  double GetInvMassDiscrepancy(double * sol, int * comb)const;
+  void GetKmomentum(const double * sol, float * p)const;
   
  private:
   /*
     x,y,z,t
    */
-  float _clu[6][4];
-  float _ene[6];
+  double _clu[6][4];
+  double _ene[6];
 };
 
 #endif
