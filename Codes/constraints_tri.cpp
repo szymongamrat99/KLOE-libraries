@@ -202,7 +202,7 @@ Double_t x_consv(Double_t *x, Double_t *p)
       tot_length = sqrt(pow(dist[0], 2) + pow(dist[1], 2) + pow(dist[2], 2));
       tot_vel = sqrt(pow(kaon_vel[0], 2) + pow(kaon_vel[1], 2) + pow(kaon_vel[2], 2));
 
-      value[i] = neu_vtx[3] - (dist[0] / kaon_vel[0]);
+      value[i] = neu_vtx[3] - (tot_length / tot_vel);
     }
     else
     {
