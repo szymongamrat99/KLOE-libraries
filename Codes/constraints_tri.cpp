@@ -15,7 +15,7 @@ Double_t ene_consv(Double_t *x, Double_t *p)
 
   Double_t value[2], value_min, T0;
 
-  T0 = Int_t(p[27]) * Trf;
+  T0 = p[27] * Trf;
 
   Reconstructor R;
   Solution S;
@@ -79,7 +79,7 @@ Double_t minv_consv(Double_t *x, Double_t *p)
 
   Double_t value[2], value_min, T0;
 
-  T0 = Int_t(p[27]) * Trf;
+  T0 = p[27] * Trf;
 
   Reconstructor R;
   Solution S;
@@ -144,7 +144,7 @@ Double_t x_consv(Double_t *x, Double_t *p)
 
   Double_t value[2], value_min, T0;
 
-  T0 = Int_t(p[27]) * Trf;
+  T0 = p[27] * Trf;
 
   Reconstructor R;
   Solution S;
@@ -202,7 +202,7 @@ Double_t x_consv(Double_t *x, Double_t *p)
       tot_length = sqrt(pow(dist[0], 2) + pow(dist[1], 2) + pow(dist[2], 2));
       tot_vel = sqrt(pow(kaon_vel[0], 2) + pow(kaon_vel[1], 2) + pow(kaon_vel[2], 2));
 
-      value[i] = neu_vtx[3] - (tot_length / tot_vel);
+      value[i] = neu_vtx[3] - (dist[0] / kaon_vel[0]);
     }
     else
     {
@@ -225,7 +225,7 @@ Double_t y_consv(Double_t *x, Double_t *p)
 
   Double_t value[2], value_min, T0;
 
-  T0 = Int_t(p[27]) * Trf;
+  T0 = p[27] * Trf;
 
   Reconstructor R;
   Solution S;
@@ -303,7 +303,7 @@ Double_t z_consv(Double_t *x, Double_t *p)
 
   Double_t value[2], value_min, T0;
 
-  T0 = Int_t(p[27]) * Trf;
+  T0 = p[27] * Trf;
 
   Reconstructor R;
   Solution S;
@@ -381,7 +381,7 @@ Double_t gamma1_consv(Double_t *x, Double_t *p)
 
   Double_t value[2], value_min, T0;
 
-  T0 = Int_t(p[27]) * Trf;
+  T0 = p[27] * Trf;
 
   Reconstructor R;
   Solution S;
@@ -453,7 +453,7 @@ Double_t gamma2_consv(Double_t *x, Double_t *p)
 
   Double_t value[2], value_min, T0;
 
-  T0 = Int_t(p[27]) * Trf;
+  T0 = p[27] * Trf;
 
   Reconstructor R;
   Solution S;
@@ -525,7 +525,7 @@ Double_t gamma3_consv(Double_t *x, Double_t *p)
 
   Double_t value[2], value_min, T0;
 
-  T0 = Int_t(p[27]) * Trf;
+  T0 = p[27] * Trf;
 
   Reconstructor R;
   Solution S;
@@ -597,7 +597,7 @@ Double_t gamma4_consv(Double_t *x, Double_t *p)
 
   Double_t value[2], value_min, T0;
 
-  T0 = Int_t(p[27]) * Trf;
+  T0 = p[27] * Trf;
 
   Reconstructor R;
   Solution S;
