@@ -26,7 +26,7 @@ namespace KLOE
 
       std::vector<Double_t> init_vars, step;
 
-      Double_t *corr_vals, *eff_vals, *resi_vals; 
+      Double_t *corr_vals, *eff_vals, *resi_vals, tmp_norm[8]; 
 
       //////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -39,6 +39,7 @@ namespace KLOE
         else if (mode == "exclude") num_of_vars = 8;
         else if (mode == "mc") num_of_vars = 3;
         else if (mode == "bcg") num_of_vars = 8;
+        else if (mode == "final") num_of_vars = 3;
 
         /*for(Int_t i = 0; i < num_of_vars; i++)
         {
@@ -86,6 +87,10 @@ namespace KLOE
 
         data = new TH1D("DATA histogram", "", bin_number, x_min, x_max);
 
+        data_sub = new TH1D("DATA subtraction histogram", "", bin_number, x_min, x_max);
+
+        mc_sub = new TH1D("MC subtraction histogram", "", bin_number, x_min, x_max);
+
         for (Int_t i = 0; i < bin_number; i++)
 		    {
 			    b_mcsum.push_back(0.);
@@ -109,7 +114,7 @@ namespace KLOE
 
         if(corr_check)
         {
-          TFile file("/internal/big_one/4/users/gamrat/scripts/Scripts/corr_file.root");
+          TFile file("../Efficiency_analysis/correction_factor.root");
 
           corr_factor = (TGraphErrors *)file.Get("correction_factor");
           corr_vals = corr_factor->GetY();
@@ -145,6 +150,7 @@ namespace KLOE
       Double_t interf_chi2_excluded(const Double_t *xx);
 
       Double_t interf_chi2_mc(const Double_t *xx);
+      Double_t interf_chi2_mc_data(const Double_t *xx);
       Double_t interf_chi2_bcg(const Double_t *xx);
 
       Double_t interf_chi2(const Double_t *xx);

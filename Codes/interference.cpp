@@ -245,7 +245,9 @@ namespace KLOE
 		}
 
 		for (Int_t i = 0; i < bin_number; i++)
+		{
 			value += pow(b_data[i] - b_mcsum[i], 2) / (pow(e_data[i], 2) + e_mcsum[i]);
+		}
 
 		return value;
 	};
@@ -360,6 +362,110 @@ namespace KLOE
 		return value;
 	};
 
+	//! Fitting signal MC to DATA after efficiency correction
+	Double_t interference::interf_chi2_mc_data(const Double_t *xx)
+	{
+		Double_t ReFit = xx[0];
+		Double_t ImFit = xx[1];
+		Double_t Norm_signal = xx[2];
+		Double_t Norm[8];
+
+		Norm[0] = tmp_norm[0];	// Left DC Wall
+		Norm[1] = tmp_norm[1];	// Left beam pipe Wall
+		Norm[2] = tmp_norm[2];	// Right beam pipe Wall
+		Norm[3] = tmp_norm[3];	// Right DC Wall
+		Norm[4] = tmp_norm[4];	// Omega norm
+		Norm[5] = tmp_norm[5];	// Three norm
+		Norm[6] = tmp_norm[6];	// Semi norm
+		Norm[7] = tmp_norm[7]; // Other bcg norm
+
+
+		/////////////////////////////////////////////////////////////////////////////////////////////
+		for (Int_t i = 0; i < chann_num; i++)
+		{
+			for (Int_t j = 0; j < time_diff[i].size(); j++)
+			{
+				if (i == 0)
+					frac[i]->Fill(time_diff[i][j], interf_function(time_diff[i][j], 0, xx)); //! Filling Signal
+				else if (i == 1)
+				{
+					if(time_diff[i][j] < left_x_split)
+						frac[i]->Fill(time_diff[i][j], Norm[0]);
+					else if(time_diff[i][j] > left_x_split && time_diff[i][j] < center_x_split)
+						frac[i]->Fill(time_diff[i][j], Norm[1]);
+					else if(time_diff[i][j] > center_x_split && time_diff[i][j] < right_x_split)
+						frac[i]->Fill(time_diff[i][j], Norm[2]);
+					else if(time_diff[i][j] > right_x_split)
+						frac[i]->Fill(time_diff[i][j], Norm[3]);
+				}
+				else
+				{
+					frac[i]->Fill(time_diff[i][j], Norm[i + 2]); //! Filling background
+				}
+			}
+
+			//! Using correction factor and efficiency
+			if (i == 0)
+			{
+				frac[i]->Scale(frac[i]->GetEntries() / frac[i]->Integral(0, bin_number + 1));
+
+				for(Int_t k = 1; k <= bin_number; k++)
+					frac[i]->SetBinContent(k, frac[i]->GetBinContent(k) / corr_vals[k-1]);
+
+				interference::bin_extraction(i, frac[i]);
+			}
+		}
+
+		/////////////////////////////////////////////////////////////////////////////////////////////
+
+		for (Int_t j = 0; j < time_diff_data.size(); j++)
+			data->Fill(time_diff_data[j]); //! Filling DATA
+
+		for (Int_t i = 1; i < chann_num; i++)
+		{
+			data->Add(frac[i], -1.);
+		}
+
+		for(Int_t k = 1; k <= bin_number; k++)
+			data->SetBinContent(k, data->GetBinContent(k) / corr_vals[k-1]);
+
+		interference::bin_extraction(6, data);
+
+		/////////////////////////////////////////////////////////////////////////////////////////////
+
+		for (Int_t i = 0; i < chann_num; i++)
+			frac[i]->Reset("ICESM");
+
+		data->Reset("ICESM");
+
+		/////////////////////////////////////////////////////////////////////////////////////////////
+
+		Double_t value = 0;
+
+		//! Sum of bins and errors for the fitting further
+
+		for (Int_t i = 0; i < bin_number; i++)
+		{
+			b_mcsum[i] = 0.;
+			e_mcsum[i] = 0.;
+		}
+
+
+		for (Int_t j = 0; j < bin_number; j++)
+		{
+				
+				b_mcsum[j] += Norm_signal * b[0][j];
+				e_mcsum[j] += pow(Norm_signal * e[0][j], 2);
+		}
+
+		for (Int_t i = 0; i < bin_number; i++)
+		{
+			value += pow(b_data[i] - b_mcsum[i], 2) / (pow(e_data[i], 2) + e_mcsum[i]);
+		}
+
+		return value;
+	};
+
 	//! Fitting 1/2 total MC to 1/2 'DATA'
 	Double_t interference::interf_chi2_bcg(const Double_t *xx)
 	{
@@ -441,6 +547,8 @@ namespace KLOE
 			return interf_chi2_mc(xx);
 		else if (mode == "bcg")
 			return interf_chi2_bcg(xx);
+		else if (mode == "final")
+			return interf_chi2_mc_data(xx);
 		else
 			return -999.0;
 	};

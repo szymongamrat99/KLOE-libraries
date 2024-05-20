@@ -1,4 +1,4 @@
-// File with methods from TrilaterationRec class for KLOE
+// File with methods from KinFit class for KLOE
 // Date: 05/03/2024
 // Author: Szymon Gamrat
 
@@ -6,7 +6,7 @@
 
 using namespace KLOE;
 
-TrilaterationRec::TrilaterationRec(UInt_t N_free, UInt_t N_const, UInt_t M, UInt_t j, UInt_t loopcount)
+KinFit::KinFit(UInt_t N_free, UInt_t N_const, UInt_t M, UInt_t j, UInt_t loopcount)
 {
   _N_free = N_free;
   _N_const = N_const;
@@ -29,7 +29,7 @@ TrilaterationRec::TrilaterationRec(UInt_t N_free, UInt_t N_const, UInt_t M, UInt
   _L.ResizeTo(_M);
   _CORR.ResizeTo(_N_free + _N_const);
 }
-TrilaterationRec::TrilaterationRec(UInt_t N_free, UInt_t N_const, UInt_t M, UInt_t loopcount)
+KinFit::KinFit(UInt_t N_free, UInt_t N_const, UInt_t M, UInt_t loopcount)
 {
   _N_free = N_free;
   _N_const = N_const;
@@ -49,11 +49,11 @@ TrilaterationRec::TrilaterationRec(UInt_t N_free, UInt_t N_const, UInt_t M, UInt
   _L.ResizeTo(_M);
   _CORR.ResizeTo(_N_free + _N_const);
 }
-TrilaterationRec::~TrilaterationRec()
+KinFit::~KinFit()
 {
 }
 
-Int_t TrilaterationRec::ParameterInitialization(Float_t *Params, Float_t *Errors)
+Int_t KinFit::ParameterInitialization(Float_t *Params, Float_t *Errors)
 {
   // Passed arrays should be of size _N_free + _N_const
 
@@ -72,7 +72,7 @@ Int_t TrilaterationRec::ParameterInitialization(Float_t *Params, Float_t *Errors
   return 0;
 };
 
-Int_t TrilaterationRec::FitFunction()
+Int_t KinFit::FitFunction()
 {
   for (Int_t l = 0; l < _M; l++)
   {

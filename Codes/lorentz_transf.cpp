@@ -2,8 +2,8 @@
 
 void lorentz_transf(Float_t *boost_vec, Float_t *vec_init, Float_t *vec_end)
 {
-  TVector3 boost(boost_vec);
   TLorentzVector before(vec_init);
+  TVector3 boost(boost_vec);
 
   before.Boost(boost);
 

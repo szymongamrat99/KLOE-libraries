@@ -1,5 +1,5 @@
-#ifndef TRI_KINFIT_H
-#define TRI_KINFIT_H
+#ifndef KINFIT_H
+#define KINFIT_H
 
 #include <TMath.h>
 #include <TMatrixD.h>
@@ -11,7 +11,7 @@ const Float_t TRF = 2.715; // ns
 
 namespace KLOE
 {
-  class TrilaterationRec
+  class KinFit
   {
   private:
     Int_t _N_free, _N_const, _M, _jmin, _jmax, _loopcount;
@@ -25,9 +25,9 @@ namespace KLOE
     Bool_t _fail;
 
   public:
-    TrilaterationRec(UInt_t N_free, UInt_t N_const, UInt_t M, UInt_t j, UInt_t loopcount);
-    TrilaterationRec(UInt_t N_free, UInt_t N_const, UInt_t M, UInt_t loopcount);
-    ~TrilaterationRec();
+    KinFit(UInt_t N_free, UInt_t N_const, UInt_t M, UInt_t j, UInt_t loopcount);
+    KinFit(UInt_t N_free, UInt_t N_const, UInt_t M, UInt_t loopcount);
+    ~KinFit();
 
     Int_t ParameterInitialization(Float_t *Params, Float_t *Errors);
 
