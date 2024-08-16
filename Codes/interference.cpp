@@ -40,7 +40,7 @@ namespace KLOE
 		else
 		{
 			RePart = Re;
-			ImPart = M_PI * (Dphi / 3.) / 180.; // Im(epsilon'/epsilon) = Dphi/3;
+			ImPart = Im_nonCPT;//M_PI * (Dphi / 3.) / 180.; // Im(epsilon'/epsilon) = Dphi/3;
 		}
 
 		// All parameters are calculated taking into account that DT is in TauKs units
@@ -246,7 +246,7 @@ namespace KLOE
 
 		for (Int_t i = 0; i < bin_number; i++)
 		{
-			value += pow(b_data[i] - b_mcsum[i], 2) / (pow(e_data[i], 2) + e_mcsum[i]);
+			value += pow(b_data[i] - b_mcsum[i], 2) / (pow(e_data[i], 2) + (e_mcsum[i]));
 		}
 
 		return value;

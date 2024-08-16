@@ -3,6 +3,7 @@
 
 #include <TString.h>
 #include <TLegend.h>
+#include <TCut.h>
 
 
   //Constants used in the analysis
@@ -74,8 +75,7 @@
   const Color_t data_color = kBlack;
   const Color_t mcsum_color = kOrange;
 
-  //Paths
-
+  
 
 
 #endif
