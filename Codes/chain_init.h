@@ -3,6 +3,7 @@
 
 #include <TString.h>
 #include <TChain.h>
+#include "../const.h"
 
 void chain_init(TChain *chain_init, UInt_t first, UInt_t last);
 

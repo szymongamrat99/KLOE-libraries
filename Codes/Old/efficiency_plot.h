@@ -12,17 +12,17 @@ class EfficiencyPlots
 {
   private:
     TMultiGraph *gathered_eff;
-    TGraph *eff_graphs[chann_num];
-    std::vector<Double_t> eff_vals_gr[chann_num];
-    std::vector<Double_t> eff_vals_sm[chann_num];
-    std::vector<Double_t> cut_var[chann_num];
+    TGraph *eff_graphs[channNum];
+    std::vector<Double_t> eff_vals_gr[channNum];
+    std::vector<Double_t> eff_vals_sm[channNum];
+    std::vector<Double_t> cut_var[channNum];
     TString var_name;
 
 
   public:
     EfficiencyPlots(Int_t point_num)
     {
-      for(Int_t i = 0; i < chann_num; i++)
+      for(Int_t i = 0; i < channNum; i++)
       {
         eff_graphs[i] = new TGraph(point_num);
       }

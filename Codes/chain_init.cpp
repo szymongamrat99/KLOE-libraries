@@ -3,7 +3,6 @@
 void chain_init(TChain *chain_init, UInt_t first, UInt_t last)
 {
     //char *env = "KLOEFILES";
-    char *path_tmp = "/internal/big_one/4/users/gamrat/old_root_files";//std::getenv(env);
 
     TString path(path_tmp);
 

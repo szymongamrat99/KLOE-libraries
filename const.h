@@ -2,23 +2,27 @@
 #define CONST_H
 
 #include <TString.h>
-#include <TLegend.h>
-#include <TCut.h>
+
+
+#include "ErrorLogs.h"
+#include "MainMenu.h"
+#include "../../Include/prod2root_analysis_code/fort_common.h" // Linking of FORTRAN common block interfcommon
+#include "../../Include/prod2root_analysis_code/fort_func.h"   // Linking of FORTRAN klspm00_lib library
 
 
   //Constants used in the analysis
   //Basic quantities
-  const double c_vel = 29.9792458;      // cm/ns
-  const double h_bar = 6.582119569E-34; // MeV*s
-  const double e_ch  = 1.602176634E-19;     // C
+  const double cVel = 29.9792458;      // cm/ns
+  const double hBar = 6.582119569E-34; // MeV*s
+  const double eleCh  = 1.602176634E-19;     // C
 
   //Particles' masses
-  const double m_phi = 1019.461;        // MeV/c^2
-  const double m_k0  = 497.611;          // MeV/c^2
-  const double m_pi0 = 134.9768;        // MeV/c^2
-  const double m_pich = 139.57039;      // MeV/c^2
-  const double m_mu = 105.6583755;      // MeV/c^2
-  const double m_ele = 0.510998950;     // MeV/c^2
+  const double mPhi = 1019.461;        // MeV/c^2
+  const double mK0  = 497.611;          // MeV/c^2
+  const double mPi0 = 134.9768;        // MeV/c^2
+  const double mPiCh = 139.57039;      // MeV/c^2
+  const double mMuon = 105.6583755;      // MeV/c^2
+  const double mElec = 0.510998950;     // MeV/c^2
 
   //Branching ratios
   //Phi
@@ -60,22 +64,35 @@
   const unsigned int MaxNumVtx = 200;
   const unsigned int MIN_CLU_ENE = 20;
 
-  const unsigned int chann_num = 6;
+  const unsigned int channNum = 6;
   
-  const TString chann_name[chann_num] = {"K_{S}K_{L}#rightarrow#pi^{+}#pi^{-}#pi^{0}#pi^{0}",
+  const TString channName[channNum] = {"K_{S}K_{L}#rightarrow#pi^{+}#pi^{-}#pi^{0}#pi^{0}",
                                       "Regeneration",
                                       "#omega#pi^{0}#rightarrow#pi^{+}#pi^{-}#pi^{0}#pi^{0}",
                                       "K_{S}K_{L}#rightarrow#pi^{+}#pi^{-}3#pi^{0}",
                                       "K_{S}K_{L}#rightarrow#pi^{#pm}l^{#mp}#nu#pi^{0}#pi^{0}",
                                       "Other bcg"};
-  const TString data_name = "DATA";
-  const TString mcsum_name = "MC sum";
+  const TString dataName = "DATA";
+  const TString mcSumName = "MC sum";
 
-  const Color_t chann_color[chann_num] = {kRed, kGreen, kViolet, kCyan, kBlue, kGreen-1};
-  const Color_t data_color = kBlack;
-  const Color_t mcsum_color = kOrange;
+  const Color_t channColor[channNum] = {kRed, kGreen, kViolet, kCyan, kBlue, kGreen-1};
+  const Color_t dataColor = kBlack;
+  const Color_t mcSumColor = kOrange;
 
-  
+  TString path_tmp = "/internal/big_one/4/users/gamrat/old_root_files";
 
+  const int
+          firstFile = 1,
+          lastFile = 56;
+
+  ErrorHandling::ErrorLogs logger;
+  bool 
+    firstFileRangeErr, 
+    lastFileRangeErr, 
+    dataTypeErr,
+    menuRangeErr;
+
+
+  Controls::Menu mainMenu(0);
 
 #endif

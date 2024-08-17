@@ -37,8 +37,8 @@ void neu_triangle(Float_t *TrcSumFinal, Float_t *vtxSigmaFinal, Float_t Clu5Vec[
 
     CosPkD[i] = (D[i].Dot(pK)) / (DTot[i] * KneTotMom);
 
-    B[i] = 2 * (DTot[i] * CosPkD[i] - (c_vel * Clu5Vec[i][3] / BetaK));
-    C[i] = pow(c_vel * Clu5Vec[i][3], 2) - pow(DTot[i], 2);
+    B[i] = 2 * (DTot[i] * CosPkD[i] - (cVel * Clu5Vec[i][3] / BetaK));
+    C[i] = pow(cVel * Clu5Vec[i][3], 2) - pow(DTot[i], 2);
 
     Delta[i] = pow(B[i], 2) - 4 * A * C[i];
 
@@ -62,13 +62,13 @@ void neu_triangle(Float_t *TrcSumFinal, Float_t *vtxSigmaFinal, Float_t Clu5Vec[
         for (Int_t k = 0; k < 3; k++)
           NeuVtxTmp[i][j][k] = ip[k] + (lK[i][j] * (pK(k) / KneTotMom));
 
-        NeuVtxTmp[i][j][3] = (lK[i][j] / (c_vel * BetaK));
+        NeuVtxTmp[i][j][3] = (lK[i][j] / (cVel * BetaK));
 
         lGamma[i][j] = sqrt(pow(Clu5Vec[i][0] - NeuVtxTmp[i][j][0], 2) +
                             pow(Clu5Vec[i][1] - NeuVtxTmp[i][j][1], 2) +
                             pow(Clu5Vec[i][2] - NeuVtxTmp[i][j][2], 2));
 
-        trctmp[i][j] = Clu5Vec[i][3] - NeuVtxTmp[i][j][3] - (lGamma[i][j] / c_vel);
+        trctmp[i][j] = Clu5Vec[i][3] - NeuVtxTmp[i][j][3] - (lGamma[i][j] / cVel);
       }
 
       if (abs(trctmp[i][0]) < abs(trctmp[i][1]))
@@ -95,14 +95,14 @@ void neu_triangle(Float_t *TrcSumFinal, Float_t *vtxSigmaFinal, Float_t Clu5Vec[
   NeuVtxAvg[3] = sqrt(pow(NeuVtxAvg[0] - ip[0], 2) +
                       pow(NeuVtxAvg[1] - ip[1], 2) +
                       pow(NeuVtxAvg[2] - ip[2], 2)) /
-                 (BetaK * c_vel);
+                 (BetaK * cVel);
 
   for (Int_t i = 0; i < 4; i++)
   {
     lGammaFinal[i] = sqrt(pow(Clu5Vec[i][0] - NeuVtxAvg[0], 2) +
                           pow(Clu5Vec[i][1] - NeuVtxAvg[1], 2) +
                           pow(Clu5Vec[i][2] - NeuVtxAvg[2], 2));
-    trc[i] = Clu5Vec[i][3] - NeuVtxAvg[3] - (lGammaFinal[i] / c_vel);
+    trc[i] = Clu5Vec[i][3] - NeuVtxAvg[3] - (lGammaFinal[i] / cVel);
 
     vtxSigma += Clu5Vec[i][4] * sqrt(pow(NeuVtxTrueClu[i][0] - NeuVtxAvg[0],2) +
                                      pow(NeuVtxTrueClu[i][1] - NeuVtxAvg[1],2) +

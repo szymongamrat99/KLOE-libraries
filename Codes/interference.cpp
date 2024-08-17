@@ -74,7 +74,7 @@ namespace KLOE
 
 	void interference::bin_extraction(UInt_t channel, TH1 *histogram)
 	{
-		if (channel < chann_num)
+		if (channel < channNum)
 		{
 			for (Int_t i = 0; i < bin_number; i++)
 				b[channel][i] = (histogram->GetBinContent(i + 1));
@@ -100,7 +100,7 @@ namespace KLOE
 		UInt_t rnd_ind;
 		srand(time(NULL));
 
-		for (Int_t i = 0; i < chann_num; i++)
+		for (Int_t i = 0; i < channNum; i++)
 		{
 			for (Int_t j = 0; j < time_diff[i].size(); j++)
 			{
@@ -152,7 +152,7 @@ namespace KLOE
 		Norm[8] = xx[10]; // Other bcg norm
 
 		/////////////////////////////////////////////////////////////////////////////////////////////
-		for (Int_t i = 0; i < chann_num; i++)
+		for (Int_t i = 0; i < channNum; i++)
 		{
 			for (Int_t j = 0; j < time_diff[i].size(); j++)
 			{
@@ -187,7 +187,7 @@ namespace KLOE
 
 		/////////////////////////////////////////////////////////////////////////////////////////////
 
-		for (Int_t i = 0; i < chann_num; i++)
+		for (Int_t i = 0; i < channNum; i++)
 			frac[i]->Reset("ICESM");
 
 		data->Reset("ICESM");
@@ -204,7 +204,7 @@ namespace KLOE
 			e_mcsum[i] = 0.;
 		}
 
-		for (Int_t i = 0; i < chann_num; i++)
+		for (Int_t i = 0; i < channNum; i++)
 		{
 			for (Int_t j = 0; j < bin_number; j++)
 			{
@@ -262,7 +262,7 @@ namespace KLOE
 		Double_t Norm[6] = {xx[2], xx[3], xx[4], xx[5], xx[6], xx[7]};
 		
 		/////////////////////////////////////////////////////////////////////////////////////////////
-		for (Int_t i = 0; i < chann_num; i++)
+		for (Int_t i = 0; i < channNum; i++)
 		{
 			for (Int_t j = 0; j < time_diff[i].size(); j++)
 			{
@@ -285,7 +285,7 @@ namespace KLOE
 				interference::bin_extraction(i, frac[i]);
 		}
 
-		for (Int_t i = 0; i < chann_num - 2; i++)
+		for (Int_t i = 0; i < channNum - 2; i++)
 			frac[i]->Reset("ICESM");
 		/////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -300,7 +300,7 @@ namespace KLOE
 			err_sum[i] = 0.;
 		}
 
-		for (Int_t i = 0; i < chann_num - 3; i++)
+		for (Int_t i = 0; i < channNum - 3; i++)
 			for (Int_t j = 0; j < bin_number; j++)
 			{
 				bin_sum[j] += Norm[i] * b[i][j];
@@ -381,7 +381,7 @@ namespace KLOE
 
 
 		/////////////////////////////////////////////////////////////////////////////////////////////
-		for (Int_t i = 0; i < chann_num; i++)
+		for (Int_t i = 0; i < channNum; i++)
 		{
 			for (Int_t j = 0; j < time_diff[i].size(); j++)
 			{
@@ -421,7 +421,7 @@ namespace KLOE
 		for (Int_t j = 0; j < time_diff_data.size(); j++)
 			data->Fill(time_diff_data[j]); //! Filling DATA
 
-		for (Int_t i = 1; i < chann_num; i++)
+		for (Int_t i = 1; i < channNum; i++)
 		{
 			data->Add(frac[i], -1.);
 		}
@@ -433,7 +433,7 @@ namespace KLOE
 
 		/////////////////////////////////////////////////////////////////////////////////////////////
 
-		for (Int_t i = 0; i < chann_num; i++)
+		for (Int_t i = 0; i < channNum; i++)
 			frac[i]->Reset("ICESM");
 
 		data->Reset("ICESM");
@@ -478,7 +478,7 @@ namespace KLOE
 
 		/////////////////////////////////////////////////////////////////////////////////////////////
 
-		for (Int_t i = 0; i < chann_num; i++)
+		for (Int_t i = 0; i < channNum; i++)
 		{
 			for (Int_t j = 0; j < time_diff_rand_mc[i].size(); j++)
 			{
@@ -523,7 +523,7 @@ namespace KLOE
 			e_mcsum[i] = 0.;
 		}
 
-		for (Int_t i = 0; i < chann_num; i++)
+		for (Int_t i = 0; i < channNum; i++)
 			for (Int_t j = 0; j < bin_number; j++)
 			{
 				b_mcsum[j] += Norm[i] * b[i][j];

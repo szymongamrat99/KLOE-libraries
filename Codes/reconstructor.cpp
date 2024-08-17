@@ -2,7 +2,7 @@
 #include "../const.h"
 #include <cmath>
 
-const float c = c_vel;
+const float c = cVel;
 
 void Reconstructor::SetClu(int i, float x, float y, float z, float t, float E){
   _clu[i][0] = x;
@@ -214,7 +214,7 @@ float Reconstructor::GetInvMasses(float * sol, int * comb,
 /****************** Difference between Mpi and mgg x 3 **************/
 float Reconstructor::GetInvMassDiscrepancy(float * sol, int * comb)const{
 
-  const float mPi0 = m_pi0; // Mev/c2  
+  const float mPi0 = mPi0; // Mev/c2  
   float * mgg = new float[3];
   GetInvMasses(sol, comb, mgg);
   
@@ -252,7 +252,7 @@ float Reconstructor::GetInvMassDiscrepancy(float * sol, int * comb)const{
  */
 void Reconstructor::GetKmomentum(const float * sol, float * p)const{
 
-  const float mK0  = m_k0;  // Mev/c2 
+  const float mK0  = mK0;  // Mev/c2 
 
   // calculate momenta of gammas
   float pgam[6][3];

@@ -19,7 +19,7 @@ Bool_t CutVarCheck()
 void EfficiencyPlots::EffCalc(TString cut_var_name)
 {
     Int_t tot_el = 0;
-    for(Int_t i = 0; i < chann_num; i++)
+    for(Int_t i = 0; i < channNum; i++)
     {
         tot_el = cut_var[i].size();
 

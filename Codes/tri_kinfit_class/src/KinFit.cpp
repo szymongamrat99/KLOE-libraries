@@ -132,7 +132,7 @@ void KinFit::PhotonPairing(std::vector<NeuPart> _Photons)
 
       AuxMinv[i] = sqrt(AuxMinv[i]);
 
-      AuxChi2 += pow(AuxMinv[i] - m_pi0, 2);
+      AuxChi2 += pow(AuxMinv[i] - mPi0, 2);
     }
 
     AuxChi2 = sqrt(AuxChi2);

@@ -84,7 +84,7 @@ Double_t KinFitSignal::MinvConsvCh(Double_t *x, Double_t *p)
     _PiCh[i].FourMom.SetPx(p[i * 2]);
     _PiCh[i].FourMom.SetPy(p[i * 2 + 1]);
     _PiCh[i].FourMom.SetPz(p[i * 2 + 2]);
-    _PiCh[i].FourMom.SetE(EnergyCalc(_PiCh[i].FourMom, m_pich));
+    _PiCh[i].FourMom.SetE(EnergyCalc(_PiCh[i].FourMom, mPiCh));
   }
 
   _Kaon[0].FourMom.SetPxPyPzE(_PiCh[0].FourMom[0] + _PiCh[1].FourMom[0],
@@ -92,7 +92,7 @@ Double_t KinFitSignal::MinvConsvCh(Double_t *x, Double_t *p)
                               _PiCh[0].FourMom[2] + _PiCh[1].FourMom[2],
                               _PiCh[0].FourMom[3] + _PiCh[1].FourMom[3]);
 
-  _value_min = (_Kaon[0].FourMom.Mag() - m_k0);
+  _value_min = (_Kaon[0].FourMom.Mag() - mK0);
 
   return _value_min;
 };
@@ -108,7 +108,7 @@ Double_t KinFitSignal::AngleChMom(Double_t *x, Double_t *p)
     _PiCh[i].FourMom.SetPx(p[i * 2]);
     _PiCh[i].FourMom.SetPy(p[i * 2 + 1]);
     _PiCh[i].FourMom.SetPz(p[i * 2 + 2]);
-    _PiCh[i].FourMom.SetE(EnergyCalc(_PiCh[i].FourMom, m_pich));
+    _PiCh[i].FourMom.SetE(EnergyCalc(_PiCh[i].FourMom, mPiCh));
   }
   _Kaon[0].FourMom.SetPxPyPzE(_PiCh[0].FourMom[0] + _PiCh[1].FourMom[0],
                           _PiCh[0].FourMom[1] + _PiCh[1].FourMom[1],
@@ -120,7 +120,7 @@ Double_t KinFitSignal::AngleChMom(Double_t *x, Double_t *p)
   _PhiMeson.FourMom.SetPxPyPzE(p[20], p[21], p[22], p[23]);
   _PhiMeson.FourPos.SetXYZT(p[24], p[25], p[26], p[23]);
 
-  _value_min = (_Kaon[0].FourMom.Mag() - m_k0);
+  _value_min = (_Kaon[0].FourMom.Mag() - mK0);
 
   return _value_min;
 };
