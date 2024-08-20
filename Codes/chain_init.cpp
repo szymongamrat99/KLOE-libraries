@@ -1,6 +1,6 @@
 #include "chain_init.h"
 
-void chain_init(TChain *chain_init, UInt_t first, UInt_t last)
+inline void chain_init(TChain *chain_init, UInt_t first, UInt_t last)
 {
     //char *env = "KLOEFILES";
 
