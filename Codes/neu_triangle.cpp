@@ -10,7 +10,7 @@ int neu_triangle(Float_t *TrcSumFinal, Float_t *vtxSigmaFinal, Float_t Clu5Vec[4
   // Logging of errors
   ErrorHandling::ErrorLogs logger;
   ofstream LogFile;
-  LogFile.open("TriangleIter.log");
+  LogFile.open(neutrec_dir + logs_dir + "TriangleIter.log");
 
   Float_t KneTotMom = 0., BetaK, CosPkD[4], DTot[4];
   Float_t A, B[4], C[4], Delta[4], lK[4][2], lGamma[4][2], lGammaFinal[4], trctmp[4][2], lKtrue[4];
@@ -92,6 +92,10 @@ int neu_triangle(Float_t *TrcSumFinal, Float_t *vtxSigmaFinal, Float_t Clu5Vec[4
     catch(ErrorHandling::ErrorCodes err)
     {
       logger.getErrLog(err, LogFile);
+      logger.getErrLog(err);
+
+      LogFile.close();
+
       return int(err);
     }
   }
@@ -123,8 +127,6 @@ int neu_triangle(Float_t *TrcSumFinal, Float_t *vtxSigmaFinal, Float_t Clu5Vec[4
 
   *TrcSumFinal = TrcSum;
   *vtxSigmaFinal = vtxSigma;
-
-  LogFile.close();
 
   return 0;
 };

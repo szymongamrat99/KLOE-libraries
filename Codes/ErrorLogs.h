@@ -19,17 +19,30 @@ namespace ErrorHandling
     DELTA_LT_ZERO = 200,
     DENOM_EQ_ZERO = 201,
 
-    NOT_RECOGNIZED = 666
+    NOT_RECOGNIZED = 666,
+
+    NUM_CODES = 7
   };
 
   class ErrorLogs
   {
   private:
+    ErrorCodes errCodesList[int(ErrorCodes::NUM_CODES)];
     std::map<ErrorCodes, TString> Logs;
+    std::map<ErrorCodes, int> errCount;
 
   public:
     ErrorLogs()
     {
+      // Creation of iterable list of error codes
+      errCodesList[0] = ErrorCodes::DATA_TYPE;
+      errCodesList[1] = ErrorCodes::RANGE;
+      errCodesList[2] = ErrorCodes::MENU_RANGE;
+      errCodesList[3] = ErrorCodes::FILE_NOT_EXIST;
+      errCodesList[4] = ErrorCodes::DELTA_LT_ZERO;
+      errCodesList[5] = ErrorCodes::DENOM_EQ_ZERO;
+      errCodesList[6] = ErrorCodes::NOT_RECOGNIZED;
+
       // General Logs
       Logs[ErrorCodes::DATA_TYPE] = Form("Invalid input data type. Error code %d", int(ErrorCodes::DATA_TYPE));
       Logs[ErrorCodes::RANGE] = Form("File number outside available range. Check const.h file. Error code %d", int(ErrorCodes::RANGE));
@@ -42,6 +55,15 @@ namespace ErrorHandling
 
       // Not recognized logs
       Logs[ErrorCodes::NOT_RECOGNIZED] = Form("Error not recognized. Error code %d", int(ErrorCodes::NOT_RECOGNIZED));
+
+      // Init of errCount
+      for(int i = 0; i < int(ErrorCodes::NUM_CODES); i++)
+        errCount[errCodesList[i]] = 0;
+    }
+
+    void setErrCount(ErrorCodes errCode)
+    {
+      errCount[errCode]++;
     }
 
     void getErrLog(ErrorCodes errCode)
@@ -56,6 +78,28 @@ namespace ErrorHandling
       LogFile << "--------------------------------------------------" << std::endl;
       LogFile << Logs[errCode] << std::endl;
       LogFile << "--------------------------------------------------" << std::endl;
+    };
+
+    void errLogStats()
+    {
+      std::cout << "Statistics of errors during the execution (by codes)" << std::endl;
+      for(int i = 0; i < int(ErrorCodes::NUM_CODES); i++)
+      {
+        std::cout << "--------------------------------------------------" << std::endl;
+        std::cout << "Error code " << int(errCodesList[i]) << ": " << errCount[errCodesList[i]] << " exceptions" << std::endl;
+        std::cout << "--------------------------------------------------" << std::endl;
+      }
+    };
+
+    void errLogStats(std::ofstream& LogFile)
+    {
+      LogFile << "Statistics of errors during the execution (by codes)" << std::endl;
+      for(int i = 0; i < int(ErrorCodes::NUM_CODES); i++)
+      {
+        LogFile << "--------------------------------------------------" << std::endl;
+        LogFile << "Error code " << int(errCodesList[i]) << ": " << errCount[errCodesList[i]] << " exceptions" << std::endl;
+        LogFile << "--------------------------------------------------" << std::endl;
+      }
     };
   };
 }

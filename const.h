@@ -3,6 +3,9 @@
 
 #include <TString.h>
 
+#include "Codes/ErrorLogs.h"
+#include "Codes/MainMenu.h"
+
   //Constants used in the analysis
   //Basic quantities
   const double cVel = 29.9792458;      // cm/ns
@@ -53,6 +56,7 @@
   const double phi_00_CPT = 43.52;      // deg
 
   //General
+  const int T0 = 2.715; // ns
   const unsigned int MaxNumtrkv = 200;
   const unsigned int MIN_CLU_ENE = 20;
 
@@ -79,20 +83,55 @@
 
   const TString
               gen_vars_filename = "gen_vars_",
-              neu_triangle_filename = "neuvtx_triangle_rec_";
+              neu_tri_filename = "neuvtx_tri_rec_",
+              neu_triangle_filename = "neuvtx_triangle_rec_",
+              neu_trilateration_kin_fit_filename = "neuvtx_tri_kin_fit_";
 
   const TString 
               gen_vars_dir = base_path + "GeneratedVars/",
-              neutrec_dir = base_path + "Neutrec/";
+              neutrec_dir = base_path + "Neutrec/",
+              root_files_dir = "root_files/",
+              logs_dir = "log/", 
+              img_dir = "img/";
 
   const TString 
               gen_vars_tree = "h_gen_vars",
               neutrec_triangle_tree = "h_triangle",
-              neutrec_tri_tree = "Neutrec",
-              neutrec_kin_fit_tree = "Neutrec";
+              neutrec_tri_tree = "h_tri",
+              neutrec_kin_fit_tree = "h_tri_kin_fit";
 
   const int
           firstFileMax = 1,
           lastFileMax = 56;
+
+// Data flags inline function
+
+inline void dataFlagSetter(Controls::DataType dataType, bool &dataFlag, int mcflag, int mctruth)
+{
+  switch (dataType)
+  {
+    case Controls::DataType::SIGNAL_TOT:
+      dataFlag = (mcflag == 1 && (mctruth == 1 || mctruth == 2));
+    case Controls::DataType::SIG_BCG:
+      dataFlag = (mcflag == 1 && mctruth != 0);
+    case Controls::DataType::MC_DATA:
+      dataFlag = (mcflag == 0 || (mcflag = 1 && mctruth != 0));
+  }
+}
+
+inline TString elapsedTimeHMS(double totalSeconds)
+{
+  int elapsedMinutes, elapsedHours;
+  double elapsedSeconds;
+  TString elapsedHMS;
+
+  elapsedHours = int(totalSeconds / 3600.);
+  elapsedMinutes = int(((totalSeconds / 3600.) - elapsedHours) * 60.);
+  elapsedSeconds = ((((totalSeconds / 3600.) - elapsedHours) * 60.) - elapsedMinutes) * 60.;
+
+  elapsedHMS = std::to_string(elapsedHours) + "h " + std::to_string(elapsedMinutes) + "min " + std::to_string(elapsedSeconds) + "s";
+
+  return elapsedHMS;
+}
 
 #endif
