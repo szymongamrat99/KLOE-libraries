@@ -30,9 +30,29 @@ namespace Controls
     BARE_TRILATERATION = 1,
     TRILATERATION_KIN_FIT = 2,
     TRIANGLE = 3,
+    COMP_OF_MET = 4,
+    EXIT = 5,
+
+    OPT_TOT = 6
+  };
+
+  enum class CPFitMenu
+  {
+    HALF_SIGNAL_MC = 1,
+    HALF_SIG_BCG_MC = 2,
+    MC_DATA = 3,
     EXIT = 4,
 
     OPT_TOT = 5
+  };
+
+  enum class GenVars
+  {
+    GEN_VARS = 1,
+    SPLIT_CHANN = 2,
+    EXIT = 3,
+
+    OPT_TOT = 4
   };
 
   enum class DataType
@@ -62,6 +82,24 @@ namespace Controls
     return is;
   }
 
+  inline std::istream &operator>>(std::istream &is, CPFitMenu &CPFitOpt)
+  {
+    int a;
+    is >> a;
+    CPFitOpt = static_cast<CPFitMenu>(a);
+
+    return is;
+  }
+
+  inline std::istream &operator>>(std::istream &is, GenVars &GenVarsOpt)
+  {
+    int a;
+    is >> a;
+    GenVarsOpt = static_cast<GenVars>(a);
+
+    return is;
+  }
+
   inline std::istream &operator>>(std::istream &is, DataType &DataTypeOpt)
   {
     int a;
@@ -79,7 +117,7 @@ namespace Controls
 
     const int ChooseMenu, MenuNum = 5;
     const TString
-        MenuName[5] = {"Main Menu", "NeutRec Menu", "Data Type", "Analysis file", ""},
+        MenuName[6] = {"Main Menu", "NeutRec Menu", "Data Type", "Analysis file", "Final CPV Fit", "Generated Variables"},
 
         ChooseOpt = "Choose the option: ";
 
@@ -97,6 +135,7 @@ namespace Controls
         MenuOpt[int(NeutRecMenu::BARE_TRILATERATION)] = Form("%d. Bare trilateration.", int(NeutRecMenu::BARE_TRILATERATION));
         MenuOpt[int(NeutRecMenu::TRILATERATION_KIN_FIT)] = Form("%d. Trilateration with kinematic fit.", int(NeutRecMenu::TRILATERATION_KIN_FIT));
         MenuOpt[int(NeutRecMenu::TRIANGLE)] = Form("%d. Trilateration with triangle.", int(NeutRecMenu::TRIANGLE));
+        MenuOpt[int(NeutRecMenu::COMP_OF_MET)] = Form("%d. Comparison of methods, plotting, etc.", int(NeutRecMenu::COMP_OF_MET));
         MenuOpt[int(NeutRecMenu::EXIT)] = Form("%d. Exit.", int(NeutRecMenu::EXIT));
 
         break;
@@ -106,6 +145,23 @@ namespace Controls
         MenuOpt[int(DataType::SIGNAL_TOT)] = Form("%d. Total MC signal.", int(DataType::SIGNAL_TOT));
         MenuOpt[int(DataType::SIG_BCG)] = Form("%d. Signal + background MC.", int(DataType::SIG_BCG));
         MenuOpt[int(DataType::MC_DATA)] = Form("%d. MC + Data.", int(DataType::MC_DATA));
+
+        break;
+      }
+      case 4:
+      {
+        MenuOpt[int(CPFitMenu::HALF_SIGNAL_MC)] = Form("%d. Only Signal; 1/2 MC vs. 1/2 'Data'", int(CPFitMenu::HALF_SIGNAL_MC));
+        MenuOpt[int(CPFitMenu::HALF_SIG_BCG_MC)] = Form("%d. Signal + Bcg; 1/2 MC vs. 1/2 'Data'", int(CPFitMenu::HALF_SIG_BCG_MC));
+        MenuOpt[int(CPFitMenu::MC_DATA)] = Form("%d. Signal + Bcg; MC vs. Data", int(CPFitMenu::MC_DATA));
+        MenuOpt[int(CPFitMenu::EXIT)] = Form("%d. Exit.", int(CPFitMenu::EXIT));
+
+        break;
+      }
+      case 5:
+      {
+        MenuOpt[int(GenVars::GEN_VARS)] = Form("%d. Genenerated variables to channel mapper.", int(GenVars::GEN_VARS));
+        MenuOpt[int(GenVars::SPLIT_CHANN)] = Form("%d. Split stream into decay channels.", int(GenVars::SPLIT_CHANN));
+        MenuOpt[int(CPFitMenu::EXIT)] = Form("%d. Exit.", int(CPFitMenu::EXIT));
 
         break;
       }
@@ -125,6 +181,7 @@ namespace Controls
         MenuOpt[int(NeutRecMenu::BARE_TRILATERATION)] = Form("%d. Bare trilateration.", int(NeutRecMenu::BARE_TRILATERATION));
         MenuOpt[int(NeutRecMenu::TRILATERATION_KIN_FIT)] = Form("%d. Trilateration with kinematic fit.", int(NeutRecMenu::TRILATERATION_KIN_FIT));
         MenuOpt[int(NeutRecMenu::TRIANGLE)] = Form("%d. Trilateration with triangle.", int(NeutRecMenu::TRIANGLE));
+        MenuOpt[int(NeutRecMenu::COMP_OF_MET)] = Form("%d. Comparison of methods, plotting, etc.", int(NeutRecMenu::COMP_OF_MET));
         MenuOpt[int(NeutRecMenu::EXIT)] = Form("%d. Exit.", int(NeutRecMenu::EXIT));
 
         break;
@@ -134,6 +191,23 @@ namespace Controls
         MenuOpt[int(DataType::SIGNAL_TOT)] = Form("%d. Total MC signal.", int(DataType::SIGNAL_TOT));
         MenuOpt[int(DataType::SIG_BCG)] = Form("%d. Signal + background MC.", int(DataType::SIG_BCG));
         MenuOpt[int(DataType::MC_DATA)] = Form("%d. MC + Data.", int(DataType::MC_DATA));
+
+        break;
+      }
+      case 4:
+      {
+        MenuOpt[int(CPFitMenu::HALF_SIGNAL_MC)] = Form("%d. Only Signal; 1/2 MC vs. 1/2 'Data'", int(CPFitMenu::HALF_SIGNAL_MC));
+        MenuOpt[int(CPFitMenu::HALF_SIG_BCG_MC)] = Form("%d. Signal + Bcg; 1/2 MC vs. 1/2 'Data'", int(CPFitMenu::HALF_SIG_BCG_MC));
+        MenuOpt[int(CPFitMenu::MC_DATA)] = Form("%d. Signal + Bcg; MC vs. Data", int(CPFitMenu::MC_DATA));
+        MenuOpt[int(CPFitMenu::EXIT)] = Form("%d. Exit.", int(CPFitMenu::EXIT));
+
+        break;
+      }
+      case 5:
+      {
+        MenuOpt[int(GenVars::GEN_VARS)] = Form("%d. Genenerated variables to channel mapper.", int(GenVars::GEN_VARS));
+        MenuOpt[int(GenVars::SPLIT_CHANN)] = Form("%d. Split stream into decay channels.", int(GenVars::SPLIT_CHANN));
+        MenuOpt[int(GenVars::EXIT)] = Form("%d. Exit.", int(GenVars::EXIT));
 
         break;
       }
@@ -174,6 +248,24 @@ namespace Controls
           std::cout << iter << ". " << fileName << std::endl;
           iter++;
         }
+      }
+      case 4:
+      {
+        for (int i = 1; i < int(CPFitMenu::OPT_TOT); i++)
+        {
+          std::cout << MenuOpt[i] << std::endl;
+        }
+
+        break;
+      }
+      case 5:
+      {
+        for (int i = 1; i < int(GenVars::OPT_TOT); i++)
+        {
+          std::cout << MenuOpt[i] << std::endl;
+        }
+
+        break;
       }
       }
     }
