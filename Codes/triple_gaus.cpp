@@ -1,62 +1,116 @@
 #include "triple_gaus.h"
 #include <iostream>
+#include <vector>
 
 Double_t triple_gaus(Double_t *x, Double_t *p)
 {
-  Double_t norm1 = 1./(p[2]*sqrt(2*M_PI));
-  Double_t norm2 = 1./(p[5]*sqrt(2*M_PI));
-  Double_t norm3 = 1./(p[8]*sqrt(2*M_PI));
+  Double_t norm[3], gaus[3];
+  Double_t value = 0.;
 
-  Double_t gaus1 = p[0]*norm1*exp(-pow((x[0] - p[1])/p[2],2)/2.);
-  Double_t gaus2 = p[3]*norm2*exp(-pow((x[0] - p[4])/p[5],2)/2.);
-  Double_t gaus3 = p[6]*norm3*exp(-pow((x[0] - p[7])/p[8],2)/2.);
+  for (Int_t i = 0; i < 3; i++)
+  {
+    norm[i] = p[i * 3] / (p[2 + i * 3] * sqrt(2 * M_PI));
+    gaus[i] = norm[i] * exp(-pow((x[0] - p[1 + i * 3]) / p[2 + i * 3], 2) / 2.);
 
-  Double_t value = gaus1 + gaus2 + gaus3;
+    value += gaus[i];
+  }
 
   return value;
 }
 
-Double_t comb_std_dev(const Double_t *p)
+Double_t comb_std_dev(const Double_t *p, const Double_t *err)
 {
-  Double_t mean[3] = {p[1], p[4], p[7]}, sigma[3] = {p[2], p[5], p[8]}, N[3] = {p[0], p[3], p[6]};
+  Double_t
+      N[3],
+      mean[3],
+      sigma[3],
+      rel_err_N[3],
+      rel_err_mean[3],
+      rel_err_sigma[3],
+      tot_rel_err = 0.,
+      NTot = 0.,
+      nominator = 0.,
+      std_dev = 0.;
 
-  Double_t NTot = N[0] + N[1] + N[2];
+  for (Int_t i = 0; i < 3; i++)
+  {
+    N[i] = p[i * 3];
+    mean[i] = p[1 + i * 3];
+    sigma[i] = p[2 + i * 3];
 
-  Double_t nominator = sqrt(pow(N[0]*sigma[0],2) + pow(N[1]*sigma[1],2) + pow(N[2]*sigma[2],2));
+    rel_err_N[i] = err[i * 3] / N[i];
+    rel_err_mean[i] = err[1 + i * 3] / mean[i];
+    rel_err_sigma[i] = err[2 + i * 3] / sigma[i];
 
-  Double_t std_dev = nominator / NTot;
+    tot_rel_err = sqrt(pow(rel_err_N[i], 2) +
+                       pow(rel_err_sigma[i], 2)) /
+                  2.;
 
-  return std_dev;
+    if (tot_rel_err > 3.0)
+      N[i] = 0.;
+
+    NTot += N[i];
+    nominator += pow(N[i] * sigma[i], 2);
+  }
+
+  return sqrt(nominator) / NTot;
 }
 
 Double_t comb_std_dev_err(const Double_t *p, const Double_t *err)
 {
-  Double_t mean[3] = {p[1], p[4], p[7]}, sigma[3] = {p[2], p[5], p[8]}, N[3] = {p[0], p[3], p[6]};
+  Double_t
+      N[3],
+      mean[3],
+      sigma[3],
+      N_err[3],
+      mean_err[3],
+      sigma_err[3],
+      rel_err_N[3],
+      rel_err_mean[3],
+      rel_err_sigma[3],
+      tot_rel_err = 0.,
+      NTot = 0.,
+      nominator = 0.,
+      err_nominator = 0.,
+      err_denominator = 0.,
+      err_sigma_tot = 0.,
+      err_N_tot = 0.,
+      std_dev = 0.;
+  Int_t
+      perm[3][3] = {{0, 1, 2},
+                    {1, 0, 2},
+                    {2, 0, 1}};
 
-  Double_t mean_err[3] = {err[1], err[4], err[7]}, sigma_err[3] = {err[2], err[5], err[8]}, N_err[3] = {err[0], err[3], err[6]};
-
-  Double_t NTot = N[0] + N[1] + N[2];
-
-  Double_t nominator = sqrt(pow(N[0]*sigma[0],2) + pow(N[1]*sigma[1],2) + pow(N[2]*sigma[2],2));
-
-  Double_t err_denominator = pow(NTot,2)*nominator;
-  Double_t err_sigma_tot = 0., err_N_tot = 0., err_nominator = 0.;
-
-  for(Int_t i = 0; i < 3; i++)
+  for (Int_t i = 0; i < 3; i++)
   {
-    err_sigma_tot += pow(sigma_err[i],2)*pow(N[i],4)*pow(NTot,2)*pow(sigma[i],2);
-  }
+    N[i] = p[i * 3];
+    mean[i] = p[1 + i * 3];
+    sigma[i] = p[2 + i * 3];
 
-  err_N_tot += pow(N_err[0],2)*pow(pow(N[1]*sigma[1],2)+pow(N[2]*sigma[2],2)-N[0]*(N[1]+N[2])*pow(sigma[0],2),2);
+    N_err[i] = err[i * 3];
+    mean_err[i] = err[1 + i * 3];
+    sigma_err[i] = err[2 + i * 3];
 
-  err_N_tot += pow(N_err[1],2)*pow(pow(N[0]*sigma[0],2)+pow(N[2]*sigma[2],2)-N[1]*(N[0]+N[2])*pow(sigma[1],2),2);
+    rel_err_N[i] = N_err[i] / N[i];
+    rel_err_mean[i] = mean_err[i] / mean[i];
+    rel_err_sigma[i] = sigma_err[i] / sigma[i];
 
-  err_N_tot += pow(N_err[2],2)*pow(pow(N[0]*sigma[0],2)+pow(N[1]*sigma[1],2)-N[2]*(N[0]+N[1])*pow(sigma[2],2),2);
+    tot_rel_err = sqrt(pow(rel_err_N[i], 2) +
+                       pow(rel_err_sigma[i], 2)) /
+                  2.;
 
+    if (tot_rel_err > 3.0)
+      N[i] = 0.;
+
+    nominator += pow(N[i] * sigma[i], 2);
+    NTot += N[i];
+
+    err_sigma_tot += pow(sigma_err[i], 2) * pow(N[i], 4) * pow(NTot, 2) * pow(sigma[i], 2);
+    err_N_tot += pow(N_err[perm[i][0]], 2) * pow(pow(N[perm[i][1]] * sigma[perm[i][1]], 2) + pow(N[perm[i][2]] * sigma[perm[i][2]], 2) - N[perm[i][0]] * (N[perm[i][1]] + N[perm[i][2]]) * pow(sigma[perm[i][0]], 2), 2);
+  };
+
+  err_denominator = pow(NTot, 2) * sqrt(nominator);
   err_nominator = err_sigma_tot + err_N_tot;
 
-
-  Double_t std_dev_err = sqrt(err_nominator) / err_denominator;
-
-  return std_dev_err;
+  return sqrt(err_nominator) / err_denominator;
 }
