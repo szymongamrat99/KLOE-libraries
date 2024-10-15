@@ -4,6 +4,7 @@
 #include <TString.h>
 #include <TStyle.h>
 #include <TChain.h>
+#include <TLorentzVector.h>
 
 #include "Codes/ErrorLogs.h"
 #include "Codes/MainMenu.h"
@@ -21,6 +22,7 @@ const double mPi0 = 134.9768;     // MeV/c^2
 const double mPiCh = 139.57039;   // MeV/c^2
 const double mMuon = 105.6583755; // MeV/c^2
 const double mElec = 0.510998950; // MeV/c^2
+const double mOmega = 782.66; // MeV/c^2
 
 // Branching ratios
 // Phi
@@ -88,12 +90,14 @@ const TString
     mctruth_filename = "mctruth_",
     neu_tri_filename = "neuvtx_tri_rec_",
     neu_triangle_filename = "neuvtx_triangle_rec_",
-    neu_trilateration_kin_fit_filename = "neuvtx_tri_kin_fit_";
+    neu_trilateration_kin_fit_filename = "neuvtx_tri_kin_fit_",
+    omega_rec_filename = "omega_rec_";
 
 const TString
     gen_vars_dir = base_path + "GeneratedVars/",
     neutrec_dir = base_path + "Neutrec/",
     cpfit_dir = base_path + "CPFit/",
+    omegarec_dir = base_path + "OmegaRec/",
     root_files_dir = "root_files/",
     logs_dir = "log/",
     result_dir = "results/",
@@ -103,11 +107,64 @@ const TString
     gen_vars_tree = "h_gen_vars",
     neutrec_triangle_tree = "h_triangle",
     neutrec_tri_tree = "h_tri",
-    neutrec_kin_fit_tree = "h_tri_kin_fit";
+    neutrec_kin_fit_tree = "h_tri_kin_fit",
+    omegarec_tree = "h_omega_rec";
 
 const int
     firstFileMax = 1,
     lastFileMax = 56;
+
+struct NeuPart
+{
+  TLorentzVector 
+              vtxLAB,
+              momentumLAB,
+              vtxPhiCM,
+              momentumPhiCM,
+              vtxMotherCM,
+              momentumMotherCM;
+  Double_t 
+        InvMass,
+        TotMomentum;
+
+  Int_t
+      CluNum[2]; 
+};
+
+struct ChPart
+{
+  TLorentzVector 
+              vtxLAB,
+              momentumLAB,
+              vtxPhiCM,
+              momentumPhiCM,
+              vtxMotherCM,
+              momentumMotherCM;
+  Double_t 
+        InvMass,
+        TotMomentum;
+
+  Int_t
+      TrkNum,
+      VtxNum; 
+};
+
+struct Phi
+{
+  TLorentzVector 
+              vtxLAB,
+              momentumLAB,
+              vtxPhiCM,
+              momentumPhiCM;
+
+  Double_t 
+        InvMass,
+        TotMomentum;
+
+  Int_t
+      TrkNum,
+      VtxNum; 
+};
 
 struct BaseKinematics
 {
@@ -115,6 +172,7 @@ struct BaseKinematics
       Kchboost[9],
       Knereclor[9],
       Knerec[9],
+      Kchrec[9],
       Kchmc[9],
       Knemc[9],
       ip[3],
@@ -129,7 +187,11 @@ struct BaseKinematics
       T0step1,
       Chi2,
       minv4gam,
-      Qmiss;
+      Qmiss,
+      trk[2][4],
+      Pgamrec[4][4],
+      omega[9],
+      pi0[2][6];
 
   UChar_t
       mctruth,
@@ -139,7 +201,10 @@ struct BaseKinematics
       pidmc[MaxNumtrkv],
       vtxmc[MaxNumtrkv],
       mother[MaxNumtrkv],
-      Vtx[MaxNumtrkv];
+      Vtx[MaxNumtrkv],
+      ncll[200],
+      vtaken[3],
+      VtxCh[3][MaxNumtrkv];
 
   Int_t
       ntmc,
@@ -147,7 +212,8 @@ struct BaseKinematics
       nclu,
       nv,
       ntv,
-      mctruth_int;
+      mctruth_int,
+      errFlag;
 };
 
 struct NeutRec4

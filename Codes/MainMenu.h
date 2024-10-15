@@ -55,6 +55,16 @@ namespace Controls
     OPT_TOT = 4
   };
 
+  enum class OmegaRec
+  {
+    OMEGA_REC = 1,
+    OMEGA_CUTS = 2,
+    PLOTS = 3,
+    EXIT = 4,
+
+    OPT_TOT = 5
+  };
+
   enum class DataType
   {
     SIGNAL_TOT = 1,
@@ -96,6 +106,15 @@ namespace Controls
     int a;
     is >> a;
     GenVarsOpt = static_cast<GenVars>(a);
+
+    return is;
+  }
+
+  inline std::istream &operator>>(std::istream &is, OmegaRec &OmegaRecOpt)
+  {
+    int a;
+    is >> a;
+    OmegaRecOpt = static_cast<OmegaRec>(a);
 
     return is;
   }
