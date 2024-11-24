@@ -1,5 +1,6 @@
 CFF = gfortran
-LDFLAGS = -lgfortran -llapack -lblas -lkernlib
+LDFLAGS = -lgfortran -llapack -lblas -lkernlib 
+CXXFLAGS = -fPIC `root-config --cflags --glibs` -lm -MD -MP
 
 VPATH = src:obj
 OBJDIR = obj
@@ -8,7 +9,7 @@ MODDIR = mod
 all: klspm00_analysis.exe $(OBJDIR)/fortran_to_cpp_linking.o $(OBJDIR)/analysis_library.o $(OBJDIR)/analysismodule.o $(MODDIR)/analysismodule.mod
 
 klspm00_analysis.exe: $(OBJDIR)/fortran_to_cpp_linking.o $(OBJDIR)/analysis_library.o
-	$(CXX) $^ -o $@ $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) $^ -o $@ $(LDFLAGS)
 
 $(OBJDIR)/fortran_to_cpp_linking.o: fortran_to_cpp_linking.cpp
 	$(CXX) -c $^ -o $@

@@ -3,7 +3,7 @@
 // PhotonMom: N photons with 4 mom components, unsorted
 // PhotonMomPi0: photons paired to pi0s with 4 mom components
 
-Int_t Pi0PhotonPair(Int_t ClusterIndex[4], Float_t PhotonMom[4][4], Int_t ClusterIndexPi0[2][2], Float_t PhotonMomPi0[2][2][4], Float_t Pi0Mom[2][4], Bool_t OmegaFlag, Float_t PichFourMom[2][4], Float_t OmegaMom[4])
+Int_t Pi0PhotonPair(Int_t ClusterIndex[4], Float_t PhotonMom[4][8], Int_t ClusterIndexPi0[2][2], Float_t PhotonMomPi0[2][2][4], Float_t Pi0Mom[2][4], Bool_t OmegaFlag, Float_t PichFourMom[2][4], Float_t OmegaMom[4])
 {
   const Int_t
       nums = 6;

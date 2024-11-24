@@ -65,6 +65,15 @@ namespace Controls
     OPT_TOT = 5
   };
 
+  enum class Efficiency
+  {
+    EFF_SCAN = 1,
+    EFF_DIST = 2,
+    EXIT = 3,
+
+    OPT_TOT = 4
+  };
+
   enum class DataType
   {
     SIGNAL_TOT = 1,
@@ -119,6 +128,15 @@ namespace Controls
     return is;
   }
 
+  inline std::istream &operator>>(std::istream &is, Efficiency &EfficiencyOpt)
+  {
+    int a;
+    is >> a;
+    EfficiencyOpt = static_cast<Efficiency>(a);
+
+    return is;
+  }
+
   inline std::istream &operator>>(std::istream &is, DataType &DataTypeOpt)
   {
     int a;
@@ -134,9 +152,9 @@ namespace Controls
     std::map<int, TString> MenuOpt;
     std::vector<TString> fileOpt;
 
-    const int ChooseMenu, MenuNum = 5;
+    const int ChooseMenu;
     const TString
-        MenuName[6] = {"Main Menu", "NeutRec Menu", "Data Type", "Analysis file", "Final CPV Fit", "Generated Variables"},
+        MenuName[8] = {"Main Menu", "NeutRec Menu", "Data Type", "Analysis file", "Final CPV Fit", "Generated Variables", "Omega-pi0 Reconstruction Menu", "Efficiency Check Menu"},
 
         ChooseOpt = "Choose the option: ";
 
@@ -181,6 +199,24 @@ namespace Controls
         MenuOpt[int(GenVars::GEN_VARS)] = Form("%d. Genenerated variables to channel mapper.", int(GenVars::GEN_VARS));
         MenuOpt[int(GenVars::SPLIT_CHANN)] = Form("%d. Split stream into decay channels.", int(GenVars::SPLIT_CHANN));
         MenuOpt[int(CPFitMenu::EXIT)] = Form("%d. Exit.", int(CPFitMenu::EXIT));
+
+        break;
+      }
+      case 6:
+      {
+        MenuOpt[int(OmegaRec::OMEGA_REC)] = Form("%d. Reconstruction of Omega channel based on the kinematic fit.", int(OmegaRec::OMEGA_REC));
+        MenuOpt[int(OmegaRec::OMEGA_CUTS)] = Form("%d. Adjustment of cuts to reject Omega channel.", int(OmegaRec::OMEGA_CUTS));
+        MenuOpt[int(OmegaRec::PLOTS)] = Form("%d. Plots, comparisons, etc.", int(OmegaRec::PLOTS));
+        MenuOpt[int(OmegaRec::EXIT)] = Form("%d. Exit.", int(OmegaRec::EXIT));
+
+        break;
+      }
+      case 7:
+      {
+        MenuOpt[int(Efficiency::EFF_SCAN)] = Form("%d. Scan of the efficiency for the range of chosen cuts.", int(Efficiency::EFF_SCAN));
+        MenuOpt[int(Efficiency::EFF_DIST)] = Form("%d. Distribution of the efficiency for the range of chosen cuts.", int(Efficiency::EFF_DIST));
+
+        MenuOpt[int(Efficiency::EXIT)] = Form("%d. Exit.", int(Efficiency::EXIT));
 
         break;
       }
@@ -230,6 +266,24 @@ namespace Controls
 
         break;
       }
+      case 6:
+      {
+        MenuOpt[int(OmegaRec::OMEGA_REC)] = Form("%d. Reconstruction of Omega channel based on the kinematic fit.", int(OmegaRec::OMEGA_REC));
+        MenuOpt[int(OmegaRec::OMEGA_CUTS)] = Form("%d. Adjustment of cuts to reject Omega channel.", int(OmegaRec::OMEGA_CUTS));
+        MenuOpt[int(OmegaRec::PLOTS)] = Form("%d. Plots, comparisons, etc.", int(OmegaRec::PLOTS));
+        MenuOpt[int(OmegaRec::EXIT)] = Form("%d. Exit.", int(OmegaRec::EXIT));
+
+        break;
+      }
+      case 7:
+      {
+        MenuOpt[int(Efficiency::EFF_SCAN)] = Form("%d. Scan of the efficiency for the range of chosen cuts.", int(Efficiency::EFF_SCAN));
+        MenuOpt[int(Efficiency::EFF_DIST)] = Form("%d. Distribution of the efficiency for the range of chosen cuts.", int(Efficiency::EFF_DIST));
+
+        MenuOpt[int(Efficiency::EXIT)] = Form("%d. Exit.", int(Efficiency::EXIT));
+
+        break;
+      }
       }
     };
 
@@ -262,7 +316,7 @@ namespace Controls
       case 3:
       {
         int iter = 0;
-        for (const TString& fileName : fileOpt)
+        for (const TString &fileName : fileOpt)
         {
           std::cout << iter << ". " << fileName << std::endl;
           iter++;
@@ -280,6 +334,24 @@ namespace Controls
       case 5:
       {
         for (int i = 1; i < int(GenVars::OPT_TOT); i++)
+        {
+          std::cout << MenuOpt[i] << std::endl;
+        }
+
+        break;
+      }
+      case 6:
+      {
+        for (int i = 1; i < int(OmegaRec::OPT_TOT); i++)
+        {
+          std::cout << MenuOpt[i] << std::endl;
+        }
+
+        break;
+      }
+      case 7:
+      {
+        for (int i = 1; i < int(Efficiency::OPT_TOT); i++)
         {
           std::cout << MenuOpt[i] << std::endl;
         }

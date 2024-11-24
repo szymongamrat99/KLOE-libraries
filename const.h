@@ -66,12 +66,14 @@ const unsigned int MIN_CLU_ENE = 20;
 
 const unsigned int channNum = 6;
 
-const TString channName[channNum] = {"K_{S}K_{L}#rightarrow#pi^{+}#pi^{-}#pi^{0}#pi^{0}",
+const TString 
+            channName[channNum] = {"K_{S}K_{L}#rightarrow#pi^{+}#pi^{-}#pi^{0}#pi^{0}",
                                      "Regeneration",
                                      "#omega#pi^{0}#rightarrow#pi^{+}#pi^{-}#pi^{0}#pi^{0}",
                                      "K_{S}K_{L}#rightarrow#pi^{+}#pi^{-}3#pi^{0}",
                                      "K_{S}K_{L}#rightarrow#pi^{#pm}l^{#mp}#nu#pi^{0}#pi^{0}",
-                                     "Other bcg"};
+                                     "Other bcg"},
+            channelInt[channNum] = {"1", "3", "4", "5", "6", "7"};
 const TString dataName = "DATA";
 const TString mcSumName = "MC sum";
 
@@ -82,8 +84,10 @@ const Color_t mcSumColor = kOrange;
 const TString
     base_path = "/internal/big_one/4/users/gamrat/scripts/Scripts/",
     path_tmp = "/internal/big_one/4/users/gamrat/old_root_files",
+    prod2root_path_v26 = "/data/k2/DBV-26/DK0",
     ext_root = ".root",
-    ext_img = ".svg";
+    ext_img = ".svg",
+    ext_csv = ".csv";
 
 const TString
     gen_vars_filename = "gen_vars_",
@@ -91,14 +95,17 @@ const TString
     neu_tri_filename = "neuvtx_tri_rec_",
     neu_triangle_filename = "neuvtx_triangle_rec_",
     neu_trilateration_kin_fit_filename = "neuvtx_tri_kin_fit_",
-    omega_rec_filename = "omega_rec_";
+    omega_rec_filename = "omega_rec_",
+    cut_vars_filename = "cut_vars_";
 
 const TString
     gen_vars_dir = base_path + "GeneratedVars/",
     neutrec_dir = base_path + "Neutrec/",
     cpfit_dir = base_path + "CPFit/",
     omegarec_dir = base_path + "OmegaRec/",
+    efficiency_dir = base_path + "EfficiencyAnalysis/",
     root_files_dir = "root_files/",
+    input_dir = "input/",
     logs_dir = "log/",
     result_dir = "results/",
     img_dir = "img/";
@@ -108,7 +115,8 @@ const TString
     neutrec_triangle_tree = "h_triangle",
     neutrec_tri_tree = "h_tri",
     neutrec_kin_fit_tree = "h_tri_kin_fit",
-    omegarec_tree = "h_omega_rec";
+    omegarec_tree = "h_omega_rec",
+    cut_vars_tree = "h_cut_vars";
 
 const int
     firstFileMax = 1,

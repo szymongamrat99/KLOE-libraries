@@ -16,6 +16,10 @@ extern "C"
 
   void GetTdiff_(float *Kch, float *Kne, float *PhiVtx, float *PhiP, float *Broots, float *DL,
                  float *DT);
+
+  void find_kchrec_(int *findKS, int *findKL, int *last_vtx, int *findClose, float *Bx,  float *By,
+                    float *Bz, int *qualv, int *nv, int *ntv, int *IV, float *CurV, float *PhiV, float *CotV, float *xv, float *yv, float *zv, int *vtaken, float *KchRec, float *trk1, float *trk2, float *cosTrk);
+
   void find_neuvtx_(float *Bpx, float *Bpy, float *Bpz, float *Broots, float *KchBoost, int *ncl, float *enecl, int *ncll, float *xcl, float *ycl, float *zcl, float *ip, float *tcl, float *cldist, float *KneRecLor, float *trc, int *nclwrong, int *ncllwrong, float *KneRec, float *minv4gam, float *pi0, int *g4taken, float *trcv, float *PgamRecTaken, int *gpairtaken, float *test, float *g4vtxerr);
 
   void test_array_(double *array, float *numbers, double *array1);

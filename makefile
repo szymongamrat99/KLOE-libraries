@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -fPIC `root-config --cflags --glibs` -lm
+CXXFLAGS = -fPIC `root-config --cflags --glibs` -lm -MD -MP
 LDFLAGS = -shared -g
 
 SRCPATH = Codes

@@ -10,7 +10,7 @@ namespace OmegaConstraints
   Double_t ene_consv(Double_t *x, Double_t *p)
   {
     Float_t
-        gamma_mom[4][4],
+        gamma_mom[4][8],
         vec_init[4],
         vec_end[4],
         neu_vtx[4],
@@ -82,7 +82,7 @@ namespace OmegaConstraints
   Double_t px_consv(Double_t *x, Double_t *p)
   {
     Float_t
-        gamma_mom[4][4],
+        gamma_mom[4][8],
         vec_init[4],
         vec_end[4],
         neu_vtx[4],
@@ -154,7 +154,7 @@ namespace OmegaConstraints
   Double_t py_consv(Double_t *x, Double_t *p)
   {
     Float_t
-        gamma_mom[4][4],
+        gamma_mom[4][8],
         vec_init[4],
         vec_end[4],
         neu_vtx[4],
@@ -226,7 +226,7 @@ namespace OmegaConstraints
   Double_t pz_consv(Double_t *x, Double_t *p)
   {
     Float_t
-        gamma_mom[4][4],
+        gamma_mom[4][8],
         vec_init[4],
         vec_end[4],
         neu_vtx[4],
@@ -302,7 +302,7 @@ namespace OmegaConstraints
         clusterindpi0[2][2];
 
     Float_t
-        gamma_mom[4][4],
+        gamma_mom[4][8],
         gamma_mom_pi0[2][2][4],
         pi0_mom[2][4],
         omega_mom[4],
@@ -382,7 +382,7 @@ namespace OmegaConstraints
         clusterindpi0[2][2];
 
     Float_t
-        gamma_mom[4][4],
+        gamma_mom[4][8],
         gamma_mom_pi0[2][2][4],
         pi0_mom[2][4],
         omega_mom[4],
@@ -454,7 +454,7 @@ namespace OmegaConstraints
         clusterindpi0[2][2];
 
     Float_t
-        gamma_mom[4][4],
+        gamma_mom[4][8],
         gamma_mom_pi0[2][2][4],
         pi0_mom[2][4],
         omega_mom[4],
@@ -521,7 +521,7 @@ namespace OmegaConstraints
 
   Double_t x_consv(Double_t *x, Double_t *p)
   {
-    Float_t gamma_mom[4][4], kaon_mom[4], neu_vtx[4], bhabha_vtx[3] = {p[24], p[25], p[26]},
+    Float_t gamma_mom[4][8], kaon_mom[4], neu_vtx[4], bhabha_vtx[3] = {p[24], p[25], p[26]},
                                                       y_axis[3] = {0., p[21], 0.}, ip[3], dist[3], kaon_vel[3], tot_length, tot_vel;
 
     Double_t value[2], value_min, T0;
@@ -574,7 +574,7 @@ namespace OmegaConstraints
 
   Double_t y_consv(Double_t *x, Double_t *p)
   {
-    Float_t gamma_mom[4][4], kaon_mom[4], neu_vtx[4], bhabha_vtx[3] = {p[24], p[25], p[26]},
+    Float_t gamma_mom[4][8], kaon_mom[4], neu_vtx[4], bhabha_vtx[3] = {p[24], p[25], p[26]},
                                                       y_axis[3] = {0., p[21], 0.}, ip[3], dist[3], kaon_vel[3];
 
     Double_t value[2], value_min, T0;
@@ -627,7 +627,7 @@ namespace OmegaConstraints
 
   Double_t z_consv(Double_t *x, Double_t *p)
   {
-    Float_t gamma_mom[4][4], kaon_mom[4], neu_vtx[4], bhabha_vtx[3] = {p[24], p[25], p[26]},
+    Float_t gamma_mom[4][8], kaon_mom[4], neu_vtx[4], bhabha_vtx[3] = {p[24], p[25], p[26]},
                                                       y_axis[3] = {0., p[21], 0.}, ip[3], dist[3], kaon_vel[3];
 
     Double_t value[2], value_min, T0;

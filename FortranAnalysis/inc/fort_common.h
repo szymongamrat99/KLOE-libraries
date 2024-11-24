@@ -192,6 +192,7 @@ extern "C"
     float KchRec[9];
     float KchRecKS[9];
     float KchRecKL[9];
+    float KchRecClose[9];
     float KneRec[9];
     float KchBoost[9];
     float ip[3];
@@ -201,6 +202,7 @@ extern "C"
     int vtaken[3];
     int vtakenks[3];
     int vtakenkl[3];
+    int vtakenclose[3];
     int mcISR;
     int mctruth;
     int ncl;
@@ -276,9 +278,12 @@ extern "C"
     float trk2KS[4];
     float trk1KL[4];
     float trk2KL[4];
+    float trk1Close[4];
+    float trk2Close[4];
     float cosTrk;
     float cosTrkKS;
     float cosTrkKL;
+    float cosTrkClose;
     float cosTrkCM;
     float Qmiss;
     int Nconstr;
