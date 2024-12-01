@@ -1,6 +1,10 @@
 #ifndef CONST_H
 #define CONST_H
 
+#include <json.hpp>
+#include <fstream>
+#include <ctime>
+
 #include <TString.h>
 #include <TStyle.h>
 #include <TChain.h>
@@ -8,6 +12,52 @@
 
 #include "Codes/ErrorLogs.h"
 #include "Codes/MainMenu.h"
+//#include <RealTimeIntegration.h>
+
+using json = nlohmann::json;
+
+const TString propName = "/internal/big_one/4/users/gamrat/scripts/Scripts/Properties/properties.json";
+static std::ifstream fprop(propName);
+static json properties = json::parse(fprop);
+
+inline const std::string currentDateTime()
+{
+  time_t now = time(0);
+  struct tm tstruct;
+  char buf[80];
+  tstruct = *localtime(&now);
+  strftime(buf, sizeof(buf), "%Y-%m-%d.%X", &tstruct);
+
+  return buf;
+}
+
+struct PDGids
+{
+  const TString 
+          Re = "/S013EPS", 
+          Im = "/S013EPI", 
+          K0mass = "/S011M", 
+          TauS = "/S012T", 
+          TauL = "/S013T",
+          deltaM = "/S013D",
+          modEps = "/S013EP",
+          phiPM = "/S013F+-",
+          phi00 = "/S013FOO";
+
+};
+
+//static API::RTI *firstTry = new API::RTI("");
+
+// //static inline void UpdateParameters()
+// {
+//   firstTry->setOpt();
+//   firstTry->setMultiURL("/internal/big_one/4/users/gamrat/scripts/Scripts/Properties/pdg_api/pdg_api.json");
+//   firstTry->getMultiAPICall();
+// }
+
+const TString constName = "/internal/big_one/4/users/gamrat/scripts/Scripts/Properties/pdg_api/pdg_const.json";
+static std::ifstream fconst(constName);
+static json constants = json::parse(fconst);
 
 // Constants used in the analysis
 // Basic quantities
@@ -22,7 +72,7 @@ const double mPi0 = 134.9768;     // MeV/c^2
 const double mPiCh = 139.57039;   // MeV/c^2
 const double mMuon = 105.6583755; // MeV/c^2
 const double mElec = 0.510998950; // MeV/c^2
-const double mOmega = 782.66; // MeV/c^2
+const double mOmega = 782.66;     // MeV/c^2
 
 // Branching ratios
 // Phi
@@ -51,7 +101,7 @@ const double tau_L = 51.16;                 // ns
 const double delta_mass_nonCPT = 0.5289E10; // hbar s^-1
 const double delta_mass_CPT = 0.5293E10;    // hbar s^-1
 const double mod_epsilon = 2.228E-3;
-const double Re = 1.66E-3;
+const double Re = constants["values"]["/S013EPS"];
 const double Im_nonCPT = -0.11;    // deg
 const double Im_CPT = -0.002;      // deg
 const double phi_pm_nonCPT = 43.4; // deg
@@ -66,14 +116,14 @@ const unsigned int MIN_CLU_ENE = 20;
 
 const unsigned int channNum = 6;
 
-const TString 
-            channName[channNum] = {"K_{S}K_{L}#rightarrow#pi^{+}#pi^{-}#pi^{0}#pi^{0}",
-                                     "Regeneration",
-                                     "#omega#pi^{0}#rightarrow#pi^{+}#pi^{-}#pi^{0}#pi^{0}",
-                                     "K_{S}K_{L}#rightarrow#pi^{+}#pi^{-}3#pi^{0}",
-                                     "K_{S}K_{L}#rightarrow#pi^{#pm}l^{#mp}#nu#pi^{0}#pi^{0}",
-                                     "Other bcg"},
-            channelInt[channNum] = {"1", "3", "4", "5", "6", "7"};
+const TString
+    channName[channNum] = {"K_{S}K_{L}#rightarrow#pi^{+}#pi^{-}#pi^{0}#pi^{0}",
+                           "Regeneration",
+                           "#omega#pi^{0}#rightarrow#pi^{+}#pi^{-}#pi^{0}#pi^{0}",
+                           "K_{S}K_{L}#rightarrow#pi^{+}#pi^{-}3#pi^{0}",
+                           "K_{S}K_{L}#rightarrow#pi^{#pm}l^{#mp}#nu#pi^{0}#pi^{0}",
+                           "Other bcg"},
+    channelInt[channNum] = {"1", "3", "4", "5", "6", "7"};
 const TString dataName = "DATA";
 const TString mcSumName = "MC sum";
 
@@ -124,54 +174,54 @@ const int
 
 struct NeuPart
 {
-  TLorentzVector 
-              vtxLAB,
-              momentumLAB,
-              vtxPhiCM,
-              momentumPhiCM,
-              vtxMotherCM,
-              momentumMotherCM;
-  Double_t 
-        InvMass,
-        TotMomentum;
+  TLorentzVector
+      vtxLAB,
+      momentumLAB,
+      vtxPhiCM,
+      momentumPhiCM,
+      vtxMotherCM,
+      momentumMotherCM;
+  Double_t
+      InvMass,
+      TotMomentum;
 
   Int_t
-      CluNum[2]; 
+      CluNum[2];
 };
 
 struct ChPart
 {
-  TLorentzVector 
-              vtxLAB,
-              momentumLAB,
-              vtxPhiCM,
-              momentumPhiCM,
-              vtxMotherCM,
-              momentumMotherCM;
-  Double_t 
-        InvMass,
-        TotMomentum;
+  TLorentzVector
+      vtxLAB,
+      momentumLAB,
+      vtxPhiCM,
+      momentumPhiCM,
+      vtxMotherCM,
+      momentumMotherCM;
+  Double_t
+      InvMass,
+      TotMomentum;
 
   Int_t
       TrkNum,
-      VtxNum; 
+      VtxNum;
 };
 
 struct Phi
 {
-  TLorentzVector 
-              vtxLAB,
-              momentumLAB,
-              vtxPhiCM,
-              momentumPhiCM;
+  TLorentzVector
+      vtxLAB,
+      momentumLAB,
+      vtxPhiCM,
+      momentumPhiCM;
 
-  Double_t 
-        InvMass,
-        TotMomentum;
+  Double_t
+      InvMass,
+      TotMomentum;
 
   Int_t
       TrkNum,
-      VtxNum; 
+      VtxNum;
 };
 
 struct BaseKinematics
@@ -227,9 +277,9 @@ struct BaseKinematics
 struct NeutRec4
 {
   Float_t
-        Knerec[10],
-        Photons[4][9],
-        chi2min;
+      Knerec[10],
+      Photons[4][9],
+      chi2min;
   Int_t
       gtaken[4],
       done;
@@ -242,7 +292,7 @@ inline void setGlobalStyle()
   gStyle->SetOptStat("iouMn");
 
   gStyle->SetFitFormat("6.2g");
-	gStyle->SetStatFormat("6.2g");
+  gStyle->SetStatFormat("6.2g");
 
   gStyle->SetCanvasDefH(750);
   gStyle->SetCanvasDefW(750);

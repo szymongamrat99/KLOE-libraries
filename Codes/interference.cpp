@@ -149,7 +149,7 @@ namespace KLOE
 		Norm[5] = xx[7];	// Omega norm
 		Norm[6] = xx[8];	// Three norm
 		Norm[7] = xx[9];	// Semi norm
-		Norm[8] = xx[10]; // Other bcg norm
+		Norm[8] = xx[10]; // Other norm
 
 		/////////////////////////////////////////////////////////////////////////////////////////////
 		for (Int_t i = 0; i < channNum; i++)
@@ -308,7 +308,7 @@ namespace KLOE
 			}
 
 		for (Int_t i = 0; i < bin_number; i++)
-			value += pow(b[6][i] - bin_sum[i], 2) / (pow(e[6][i], 2) + err_sum[i]);
+			value += pow(b[6][i] - bin_sum[i], 2) / (pow(e[6][i], 2) + err_sum[i]/2.);
 
 		return value;
 	};
