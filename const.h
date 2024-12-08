@@ -4,21 +4,31 @@
 #include <json.hpp>
 #include <fstream>
 #include <ctime>
+#include <stdlib.h>
 
 #include <TString.h>
 #include <TStyle.h>
 #include <TChain.h>
 #include <TLorentzVector.h>
 
-#include "Codes/ErrorLogs.h"
-#include "Codes/MainMenu.h"
-//#include <RealTimeIntegration.h>
+#include <ErrorLogs.h>
+#include <MainMenu.h>
+#include <RealTimeIntegration.h>
 
 using json = nlohmann::json;
 
-const TString propName = "/internal/big_one/4/users/gamrat/scripts/Scripts/Properties/properties.json";
-static std::ifstream fprop(propName);
-static json properties = json::parse(fprop);
+// Get the env variable for properties
+
+const std::string
+      kloedataPath = getenv("KLOE_DBV26_DK0"),
+      workdirPath = getenv("WORKDIR"),
+      chainFiles = kloedataPath + "/*.root",
+      pdgConstFilePath = workdirPath + "/scripts/Scripts/Subanalysis/Properties/pdg_api/pdg_const.json",
+      propertiesPath = getenv("PROPERTIESKLOE"),
+      propName = propertiesPath + "/properties.json";
+
+static std::ifstream propertyFile(propName.c_str());
+static json properties = json::parse(propertyFile);
 
 inline const std::string currentDateTime()
 {
@@ -46,18 +56,9 @@ struct PDGids
 
 };
 
-//static API::RTI *firstTry = new API::RTI("");
-
-// //static inline void UpdateParameters()
-// {
-//   firstTry->setOpt();
-//   firstTry->setMultiURL("/internal/big_one/4/users/gamrat/scripts/Scripts/Properties/pdg_api/pdg_api.json");
-//   firstTry->getMultiAPICall();
-// }
-
-const TString constName = "/internal/big_one/4/users/gamrat/scripts/Scripts/Properties/pdg_api/pdg_const.json";
-static std::ifstream fconst(constName);
-static json constants = json::parse(fconst);
+// const TString constName = "/internal/big_one/4/users/gamrat/scripts/Scripts/Properties/pdg_api/pdg_const.json";
+// static std::ifstream fconst(constName);
+// static json constants = json::parse(fconst);
 
 // Constants used in the analysis
 // Basic quantities
@@ -67,7 +68,7 @@ const double eleCh = 1.602176634E-19; // C
 
 // Particles' masses
 const double mPhi = 1019.461;     // MeV/c^2
-const double mK0 = 497.611;       // MeV/c^2
+const double mK0 = 1;//(Double_t)constants["values"]["/S011M"];       // MeV/c^2
 const double mPi0 = 134.9768;     // MeV/c^2
 const double mPiCh = 139.57039;   // MeV/c^2
 const double mMuon = 105.6583755; // MeV/c^2
@@ -95,19 +96,19 @@ const double br_kl_piele = 0.4055;
 const double br_kl_pimu = 0.2704;
 
 // Kaons' properties and CPV
-const double tau_S_nonCPT = 0.89564E-1;     // ns
-const double tau_S_CPT = 0.8954E-1;         // ns
-const double tau_L = 51.16;                 // ns
-const double delta_mass_nonCPT = 0.5289E10; // hbar s^-1
-const double delta_mass_CPT = 0.5293E10;    // hbar s^-1
-const double mod_epsilon = 2.228E-3;
-const double Re = constants["values"]["/S013EPS"];
-const double Im_nonCPT = -0.11;    // deg
-const double Im_CPT = -0.002;      // deg
-const double phi_pm_nonCPT = 43.4; // deg
-const double phi_pm_CPT = 43.51;   // deg
-const double phi_00_nonCPT = 43.7; // deg
-const double phi_00_CPT = 43.52;   // deg
+const double tau_S_nonCPT = 1;//(Double_t)constants["values"]["/S012T"] * 1E9;     // ns
+const double tau_S_CPT = 1;//0.8954E-1;         // ns
+const double tau_L = 1;//(Double_t)constants["values"]["/S013T"] * 1E9;                 // ns
+const double delta_mass_nonCPT = 1;//(Double_t)constants["values"]["/S013D"]; // hbar s^-1
+const double delta_mass_CPT = 1;//0.5293E10;    // hbar s^-1
+const double mod_epsilon = 1;//(Double_t)constants["values"]["/S013EP"];
+const double Re = 1;//constants["values"]["/S013EPS"];
+const double Im_nonCPT = 1;//(Double_t)constants["values"]["/S013EPI"];    // deg
+const double Im_CPT = 1;//-0.002;      // deg
+const double phi_pm_nonCPT = 1;//(Double_t)constants["values"]["/S013F+-"]; // deg
+const double phi_pm_CPT = 1;//43.51;   // deg
+const double phi_00_nonCPT = 1;//(Double_t)constants["values"]["/S013FOO"]; // deg
+const double phi_00_CPT = 1;//43.52;   // deg
 
 // General
 const int T0 = 2.715; // ns

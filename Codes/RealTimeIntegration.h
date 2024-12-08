@@ -23,35 +23,42 @@ namespace API
         _URLschema,
         _interface;
 
-    std::vector<TString>
-        _MultiURL;
+    std::vector<std::string>
+        _MultiURL,
+        _pdgID;
 
     std::vector<std::string>
                       _resptable;
 
     std::string
-            _response;
+            _response,
+            _parPath;
 
     Int_t
         _pdgidMax;
 
     json
-      _responseJSON;
+      _responseJSON,
+      _parametersJSON;
 
   public:
-    RTI(const char *URLschema);
-    RTI(TString URLschema);
+    RTI(const char *URLschema, std::string parPath);
+    RTI(TString URLschema, std::string parPath);
     RTI();
 
     void setURL(const char *URLschema);
     void setURL(TString URLschema);
     void setOpt();
 
+    void setParsPath(std::string parsPath);
+
     void setMultiURL(TString propName);
 
     void getAPICall();
     void getMultiAPICall();
     Double_t getValue(Int_t i);
+
+    void createJSONPars();
 
     static size_t write_to_string(void *ptr, size_t size, size_t count, void *stream);
   };
