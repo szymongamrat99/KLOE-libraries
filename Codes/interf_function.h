@@ -3,6 +3,6 @@
 
 #include "TMath.h"
 
-Double_t interf_function(const Float_t, Int_t, const Double_t*);
+Double_t interf_function(const Float_t);
 
 #endif

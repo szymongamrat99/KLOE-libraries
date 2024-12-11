@@ -1,0 +1,26 @@
+CXX = g++
+CFF = gfortran
+
+LDFLAGS = -shared -g -fPIC -lm -lgfortran -llapack -lblas -lkernlib
+
+VPATH = src:obj
+OBJDIR = obj
+MODDIR = mod
+LIBDIR = lib
+
+SHARED = $(LIBDIR)/libfort.so
+
+all: $(SHARED) $(OBJDIR)/analysis_library.o $(OBJDIR)/analysismodule.o $(MODDIR)/analysismodule.mod
+
+$(SHARED): $(OBJDIR)/analysis_library.o $(OBJDIR)/analysismodule.o
+	$(CXX) $^ -o $@ $(LDFLAGS)
+
+$(OBJDIR)/analysismodule.o: analysismodule.f
+	$(CFF) -c $< -o $@ -J$(MODDIR)
+
+$(OBJDIR)/analysis_library.o: analysis_library.f $(OBJDIR)/analysismodule.o
+	$(CFF) -c $< -o $@ -J$(MODDIR) -fPIC
+
+clean:
+	rm -f $(SHARED) $(OBJDIR)/*.o $(MODDIR)/*.mod
+

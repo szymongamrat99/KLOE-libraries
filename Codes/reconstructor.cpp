@@ -2,9 +2,9 @@
 #include "../const.h"
 #include <cmath>
 
-const double c = c_vel;
+const float c = cVel;
 
-void Reconstructor::SetClu(int i, double x, double y, double z, double t, double E){
+void Reconstructor::SetClu(int i, float x, float y, float z, float t, float E){
   _clu[i][0] = x;
   _clu[i][1] = y;
   _clu[i][2] = z;
@@ -17,10 +17,10 @@ void Reconstructor::SetClu(int i, double x, double y, double z, double t, double
 */
 Solution Reconstructor::MySolve(int * selected){
   
-  double t[4];
-  double x[4];
-  double y[4];
-  double z[4];
+  float t[4];
+  float x[4];
+  float y[4];
+  float z[4];
   
   for(int i=0;i<4;i++){
     x[i] = _clu[ selected[i] - 1 ][0];
@@ -30,13 +30,13 @@ Solution Reconstructor::MySolve(int * selected){
   }
   
   // tablice robocze
-  double T[4];
-  double B[4];
-  double C[4];
-  double D[4];
-  double X[4];
-  double Y[4];
-  double Z[4];
+  float T[4];
+  float B[4];
+  float C[4];
+  float D[4];
+  float X[4];
+  float Y[4];
+  float Z[4];
   
   // form linear system
   for(int k=1;k<4;k++){
@@ -49,7 +49,7 @@ Solution Reconstructor::MySolve(int * selected){
   }
   
   // solution of linear system
-  double denom = -1.*X[3]*Y[2]*Z[1]+X[2]*Y[3]*Z[1]+X[3]*Y[1]*Z[2]-X[1]*Y[3]*Z[2]-X[2]*Y[1]*Z[3]+X[1]*Y[2]*Z[3];
+  float denom = -1.*X[3]*Y[2]*Z[1]+X[2]*Y[3]*Z[1]+X[3]*Y[1]*Z[2]-X[1]*Y[3]*Z[2]-X[2]*Y[1]*Z[3]+X[1]*Y[2]*Z[3];
 
   // poszukwanie zrodla NaN
   //assert( denom != 0 );
@@ -71,14 +71,14 @@ Solution Reconstructor::MySolve(int * selected){
   
   denom = 2.*( c*c - D[1]*D[1] - D[2]*D[2] - D[3]*D[3] );
   
-  double p = 2.*( C[1]*D[1] + C[2]*D[2] +C[3]*D[3] + c*c*t[0] - D[1]*x[0] - D[2]*y[0] - D[3]*z[0] ) ;
-  double q = -C[1]*C[1]-C[2]*C[2]-C[3]*C[3]+c*c*t[0]*t[0]+2.*C[1]*x[0]-x[0]*x[0]+2.*C[2]*y[0]-y[0]*y[0]+2.*C[3]*z[0]-z[0]*z[0];
+  float p = 2.*( C[1]*D[1] + C[2]*D[2] +C[3]*D[3] + c*c*t[0] - D[1]*x[0] - D[2]*y[0] - D[3]*z[0] ) ;
+  float q = -C[1]*C[1]-C[2]*C[2]-C[3]*C[3]+c*c*t[0]*t[0]+2.*C[1]*x[0]-x[0]*x[0]+2.*C[2]*y[0]-y[0]*y[0]+2.*C[3]*z[0]-z[0]*z[0];
   
-  //double delta;
+  //float delta;
   //delta = p*p - 2.*denom*q;
   
   S.sol[0][3] = ( p - sqrt( p*p - 2.*denom*q ) ) / denom;
-  S.sol[1][3] = ( p + sqrt( p*p - 2.*denom*q ) ) / denom;
+  S.sol[1][3] = ( p + sqrt( p*p - 2.*denom*q ) ) / denom; 
 
   for(int i=0;i<2;i++){
     S.error[i] = false;
@@ -105,7 +105,7 @@ Solution Reconstructor::KleusbergSolve(int * selected){
 /*
   x0 - initial guess (x,y,z,t)
  */
-Solution Reconstructor::LeastSquaresSolve(double * x0){
+Solution Reconstructor::LeastSquaresSolve(float * x0){
 
   Solution S;
   return S;
@@ -114,9 +114,9 @@ Solution Reconstructor::LeastSquaresSolve(double * x0){
 /************************ Solve with Minui5Bt *************************/
 Reconstructor * r;
 
-double rsq(const double * x){
+float rsq(const float * x){
 
-  double sum = 0;
+  float sum = 0;
 
   for(int i=0;i<6;i++){
     sum += pow( r->ResidualErr(i,x) , 2.);
@@ -124,7 +124,7 @@ double rsq(const double * x){
   return sum;
 }
 
-Solution Reconstructor::MinuitSolve(double * x0){
+Solution Reconstructor::MinuitSolve(float * x0){
   
   Solution S;
   return S;
@@ -132,8 +132,8 @@ Solution Reconstructor::MinuitSolve(double * x0){
 
 /******************** Residual Error computation ********************/
 // i - counts from 0
-double Reconstructor::ResidualErr(int i, const double * x){
-  double err = 0;
+float Reconstructor::ResidualErr(int i, const float * x){
+  float err = 0;
   err = sqrt(pow(_clu[i][0] - x[0], 2.) + 
 	     pow(_clu[i][1] - x[1], 2.) + 
 	     pow(_clu[i][2] - x[2], 2.) ) -
@@ -142,8 +142,8 @@ double Reconstructor::ResidualErr(int i, const double * x){
   return fabs(err);
 }
 
-double Reconstructor::ResidualErrTot(const double * x){
-  double R =  0;
+float Reconstructor::ResidualErrTot(const float * x){
+  float R =  0;
   for(int i=0; i<6;i++){
     R += ResidualErr( i, x);
   }
@@ -151,9 +151,9 @@ double Reconstructor::ResidualErrTot(const double * x){
 }
 
 /************** Total energy of 4-cluster combination ***************/
-double Reconstructor::CombEnergy(int * selected){
+float Reconstructor::CombEnergy(int * selected){
   
-  double E = 0;
+  float E = 0;
   for(int i=0;i<4;i++){
     E += _ene[ selected[i]-1 ];
   }
@@ -161,9 +161,9 @@ double Reconstructor::CombEnergy(int * selected){
 }
 
 /****************** Total energy of all 6 clusters ******************/
-double Reconstructor::TotalEnergy()const{
+float Reconstructor::TotalEnergy()const{
 
-  double E = 0;
+  float E = 0;
   for(int i=0;i<6;i++){
     E += _ene[ i ];
   }
@@ -173,15 +173,15 @@ double Reconstructor::TotalEnergy()const{
 
 /****************** Invariant masses of three gg pairs **************/
 /*
-  Fills Minvgg (double[3]) with gg invariant masses
+  Fills Minvgg (float[3]) with gg invariant masses
   Returns pi0pi0pi0 (or 6gamma) invariant mass
  */
-double Reconstructor::GetInvMasses(double * sol, int * comb, 
-				   double * Minvgg)const{
+float Reconstructor::GetInvMasses(float * sol, int * comb, 
+				   float * Minvgg)const{
   
   // calculate momenta of gammas
-  double p[6][3];
-  double tot;
+  float p[6][3];
+  float tot;
   for(int i=0;i<6;i++){ // over gammas
     tot = 0;
     for(int j=0;j<3;j++){ // over coordinates
@@ -203,7 +203,7 @@ double Reconstructor::GetInvMasses(double * sol, int * comb,
   }
   
   // calculate 6g invariant mass
-  double M6g = sqrt( pow( _ene[0]+_ene[1]+_ene[2]+_ene[3]+_ene[4]+_ene[5] ,2.) -
+  float M6g = sqrt( pow( _ene[0]+_ene[1]+_ene[2]+_ene[3]+_ene[4]+_ene[5] ,2.) -
 		     pow( p[0][0]+p[1][0]+p[2][0]+p[3][0]+p[4][0]+p[5][0] ,2.) -
 		     pow( p[0][1]+p[1][1]+p[2][1]+p[3][1]+p[4][1]+p[5][1] ,2.) -
 		     pow( p[0][2]+p[1][2]+p[2][2]+p[3][2]+p[4][2]+p[5][2] ,2.) );
@@ -212,19 +212,19 @@ double Reconstructor::GetInvMasses(double * sol, int * comb,
 }
 
 /****************** Difference between Mpi and mgg x 3 **************/
-double Reconstructor::GetInvMassDiscrepancy(double * sol, int * comb)const{
+float Reconstructor::GetInvMassDiscrepancy(float * sol, int * comb)const{
 
-  const double mPi0 = m_pi0; // Mev/c2  
-  double * mgg = new double[3];
+  const float mPi0 = mPi0; // Mev/c2  
+  float * mgg = new float[3];
   GetInvMasses(sol, comb, mgg);
   
   // calculate sigmas of energy
-  double dE[6];
+  float dE[6];
   for(int i=0;i<6;i++){
     dE[i] = 0.057 * _ene[i] / sqrt( _ene[i]/1000. );
   }
   // calculate sigmas of invariant masses
-  double dM[3];
+  float dM[3];
   for(int i=0;i<3;i++){
     dM[i] = 0.5*sqrt( (_ene[comb[2*i+1]-1] / _ene[comb[2*i]-1]) * 
 		      pow( dE[2*i] , 2.) +
@@ -233,7 +233,7 @@ double Reconstructor::GetInvMassDiscrepancy(double * sol, int * comb)const{
   }
   
   // finally calculate discrepancy
-  double d = 0;
+  float d = 0;
   for(int i=0;i<3;i++){
     d += abs( mgg[i] - mPi0 ) / dM[i];
     //    d += abs( mgg[i] - mPi0 ) * pow( _ene[comb[2*i+1]-1] + _ene[comb[2*i]-1], -2. );
@@ -250,13 +250,13 @@ double Reconstructor::GetInvMassDiscrepancy(double * sol, int * comb)const{
   p[4] - total K momentum
   uses solution sol for vertex
  */
-void Reconstructor::GetKmomentum(const double * sol, float * p)const{
+void Reconstructor::GetKmomentum(const float * sol, float * p)const{
 
-  const double mK0  = m_k0;  // Mev/c2 
+  const float mK0  = mK0;  // Mev/c2 
 
   // calculate momenta of gammas
-  double pgam[6][3];
-  double tot;
+  float pgam[6][3];
+  float tot;
   for(int i=0;i<6;i++){ // over gammas
     tot = 0;
     for(int j=0;j<3;j++){ // over coordinates

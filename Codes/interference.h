@@ -19,16 +19,18 @@ namespace KLOE
   {
     public:
 
-      std::vector<Double_t> time_diff[chann_num], time_diff_gen, time_diff_data;
-      std::vector<Double_t> time_diff_rand_mc[chann_num], time_diff_rand_data[chann_num], time_diff_gen_rand_mc, time_diff_gen_rand_data;
+      std::vector<Double_t> time_diff[channNum], time_diff_gen, time_diff_data;
+      std::vector<Double_t> time_diff_rand_mc[channNum], time_diff_rand_data[channNum], time_diff_gen_rand_mc, time_diff_gen_rand_data;
 
       Double_t *exclusions, left_x_split, center_x_split, right_x_split;
 
       std::vector<Double_t> init_vars, step;
 
-      Double_t *corr_vals, *eff_vals; 
+      Double_t *corr_vals, *eff_vals, *resi_vals, tmp_norm[8]; 
 
       //////////////////////////////////////////////////////////////////////////////////////////////////////
+
+      interference() {};
 
       interference(TString mode_init, Bool_t corr_check, UInt_t bin_num_init, Double_t x_min_init, Double_t x_max_init, Double_t *split) : mode(mode_init), pm00()
       {
@@ -37,6 +39,7 @@ namespace KLOE
         else if (mode == "exclude") num_of_vars = 8;
         else if (mode == "mc") num_of_vars = 3;
         else if (mode == "bcg") num_of_vars = 8;
+        else if (mode == "final") num_of_vars = 3;
 
         /*for(Int_t i = 0; i < num_of_vars; i++)
         {
@@ -61,9 +64,11 @@ namespace KLOE
 
         //////////////////////////////////////////////////////////////////////////////////
 
+        resi_vals = new Double_t[bin_number];
+
         // Channels of MC: pm00, regen, omega, three, semi, other bcg (6)
 
-        for (Int_t i = 0; i < chann_num; i++)
+        for (Int_t i = 0; i < channNum; i++)
           frac.push_back(new TH1D(("Fitted histo " + std::to_string(i)).c_str(), "", bin_number, x_min, x_max));
 
         // MC sum histogram
@@ -74,13 +79,17 @@ namespace KLOE
 
         if(mode == "mc" || mode == "bcg")
         {
-          for (Int_t i = 0; i < chann_num; i++)
+          for (Int_t i = 0; i < channNum; i++)
             frac_data.push_back(new TH1D(("MC 'data' fracs " + std::to_string(i)).c_str(), "", bin_number, x_min, x_max));
         }
 
         // Total histogram for Data
 
         data = new TH1D("DATA histogram", "", bin_number, x_min, x_max);
+
+        data_sub = new TH1D("DATA subtraction histogram", "", bin_number, x_min, x_max);
+
+        mc_sub = new TH1D("MC subtraction histogram", "", bin_number, x_min, x_max);
 
         for (Int_t i = 0; i < bin_number; i++)
 		    {
@@ -91,7 +100,7 @@ namespace KLOE
 			    e_data.push_back(0.);
 		    }
 
-        for (Int_t i = 0; i < chann_num; i++)
+        for (Int_t i = 0; i < channNum; i++)
           for (Int_t j = 0; j < bin_number; j++)
           {
             b[i].push_back(0.);
@@ -105,7 +114,7 @@ namespace KLOE
 
         if(corr_check)
         {
-          TFile file("/internal/big_one/4/users/gamrat/scripts/Scripts/corr_file.root");
+          TFile file("../Efficiency_analysis/correction_factor.root");
 
           corr_factor = (TGraphErrors *)file.Get("correction_factor");
           corr_vals = corr_factor->GetY();
@@ -141,6 +150,7 @@ namespace KLOE
       Double_t interf_chi2_excluded(const Double_t *xx);
 
       Double_t interf_chi2_mc(const Double_t *xx);
+      Double_t interf_chi2_mc_data(const Double_t *xx);
       Double_t interf_chi2_bcg(const Double_t *xx);
 
       Double_t interf_chi2(const Double_t *xx);
@@ -150,8 +160,6 @@ namespace KLOE
       /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     private:
-
-      ROOT::Math::Minimizer *minimum;
 
       TString mode; //! "split", "window", "excluded, "mc", "bcg", "all"
       TGraphErrors *corr_factor, *eff_factor;
