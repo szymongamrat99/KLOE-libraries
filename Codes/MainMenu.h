@@ -14,15 +14,16 @@ namespace Controls
     KCHREC_NO_BOOST = 2,
     KCHREC_BOOST = 3,
     IP_EV_BY_EV = 4,
-    KNEREC_TRILAT = 5,
-    KNEREC_TRIANGLE = 6,
-    EFF_SIG_TO_BCG = 7,
-    KIN_FITS = 8,
-    TRANSF_TO_CM = 9,
-    CPV_NORM = 10,
-    EXIT = 11,
+    OMEGA_REC = 5,
+    KNEREC_TRILAT = 6,
+    KNEREC_TRIANGLE = 7,
+    EFF_SIG_TO_BCG = 8,
+    KIN_FITS = 9,
+    TRANSF_TO_CM = 10,
+    CPV_NORM = 11,
+    EXIT = 12,
 
-    OPT_TOT = 12
+    OPT_TOT = 13
   };
 
   enum class NeutRecMenu

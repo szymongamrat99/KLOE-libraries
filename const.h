@@ -56,9 +56,8 @@ struct PDGids
 
 };
 
-// const TString constName = "/internal/big_one/4/users/gamrat/scripts/Scripts/Properties/pdg_api/pdg_const.json";
-// static std::ifstream fconst(constName);
-// static json constants = json::parse(fconst);
+static std::ifstream fconst(pdgConstFilePath);
+static json constants = json::parse(fconst);
 
 // Constants used in the analysis
 // Basic quantities
@@ -68,7 +67,7 @@ const double eleCh = 1.602176634E-19; // C
 
 // Particles' masses
 const double mPhi = 1019.461;     // MeV/c^2
-const double mK0 = 1;//(Double_t)constants["values"]["/S011M"];       // MeV/c^2
+const double mK0 = (Double_t)constants["values"]["/S011M"];       // MeV/c^2
 const double mPi0 = 134.9768;     // MeV/c^2
 const double mPiCh = 139.57039;   // MeV/c^2
 const double mMuon = 105.6583755; // MeV/c^2
@@ -96,19 +95,19 @@ const double br_kl_piele = 0.4055;
 const double br_kl_pimu = 0.2704;
 
 // Kaons' properties and CPV
-const double tau_S_nonCPT = 1;//(Double_t)constants["values"]["/S012T"] * 1E9;     // ns
-const double tau_S_CPT = 1;//0.8954E-1;         // ns
-const double tau_L = 1;//(Double_t)constants["values"]["/S013T"] * 1E9;                 // ns
-const double delta_mass_nonCPT = 1;//(Double_t)constants["values"]["/S013D"]; // hbar s^-1
-const double delta_mass_CPT = 1;//0.5293E10;    // hbar s^-1
-const double mod_epsilon = 1;//(Double_t)constants["values"]["/S013EP"];
-const double Re = 1;//constants["values"]["/S013EPS"];
-const double Im_nonCPT = 1;//(Double_t)constants["values"]["/S013EPI"];    // deg
-const double Im_CPT = 1;//-0.002;      // deg
-const double phi_pm_nonCPT = 1;//(Double_t)constants["values"]["/S013F+-"]; // deg
-const double phi_pm_CPT = 1;//43.51;   // deg
-const double phi_00_nonCPT = 1;//(Double_t)constants["values"]["/S013FOO"]; // deg
-const double phi_00_CPT = 1;//43.52;   // deg
+const double tau_S_nonCPT = (Double_t)constants["values"]["/S012T"] * 1E9;     // ns
+const double tau_S_CPT = 0.8954E-1;         // ns
+const double tau_L = (Double_t)constants["values"]["/S013T"] * 1E9;                 // ns
+const double delta_mass_nonCPT = (Double_t)constants["values"]["/S013D"]; // hbar s^-1
+const double delta_mass_CPT = 0.5293E10;    // hbar s^-1
+const double mod_epsilon = (Double_t)constants["values"]["/S013EP"];
+const double Re = (Double_t)constants["values"]["/S013EPS"];
+const double Im_nonCPT = (Double_t)constants["values"]["/S013EPI"];    // deg
+const double Im_CPT = -0.002;      // deg
+const double phi_pm_nonCPT = (Double_t)constants["values"]["/S013F+-"]; // deg
+const double phi_pm_CPT = 43.51;   // deg
+const double phi_00_nonCPT = (Double_t)constants["values"]["/S013FOO"]; // deg
+const double phi_00_CPT = 43.52;   // deg
 
 // General
 const int T0 = 2.715; // ns
@@ -134,7 +133,7 @@ const Color_t mcSumColor = kOrange;
 
 const TString
     base_path = "/internal/big_one/4/users/gamrat/scripts/Scripts/",
-    path_tmp = "/internal/big_one/4/users/gamrat/old_root_files",
+    path_tmp = (std::string)properties["variables"]["rootFiles"]["path"],
     prod2root_path_v26 = "/data/k2/DBV-26/DK0",
     ext_root = ".root",
     ext_img = ".svg",
@@ -150,11 +149,11 @@ const TString
     cut_vars_filename = "cut_vars_";
 
 const TString
-    gen_vars_dir = base_path + "GeneratedVars/",
-    neutrec_dir = base_path + "Neutrec/",
-    cpfit_dir = base_path + "CPFit/",
-    omegarec_dir = base_path + "OmegaRec/",
-    efficiency_dir = base_path + "EfficiencyAnalysis/",
+    gen_vars_dir = base_path + "Subanalysis/GeneratedVars/",
+    neutrec_dir = base_path + "Subanalysis/Neutrec/",
+    cpfit_dir = base_path + "Subanalysis/CPFit/",
+    omegarec_dir = base_path + "Subanalysis/OmegaRec/",
+    efficiency_dir = base_path + "Subanalysis/EfficiencyAnalysis/",
     root_files_dir = "root_files/",
     input_dir = "input/",
     logs_dir = "log/",
@@ -367,8 +366,6 @@ inline TString elapsedTimeHMS(double totalSeconds)
 
 inline void chain_init(TChain *chain_init, UInt_t first, UInt_t last)
 {
-  // char *env = "KLOEFILES";
-
   TString path(path_tmp);
 
   TString fullname = "",
